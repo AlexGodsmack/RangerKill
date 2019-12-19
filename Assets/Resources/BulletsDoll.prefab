@@ -59,6 +59,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -97,8 +98,11 @@ MonoBehaviour:
   BulletsSkin: 0
   CountOfBullets: 0
   Price: 0
+  ClipOfWeapon: 0
   Name: 
   Bought: 0
+  Default: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  Additive: {fileID: 2100000, guid: 22dff628588ea1046800487644b9556c, type: 2}
   skin1: {fileID: 874343242196921964, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
   skin2: {fileID: -7976837497307082302, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
   skin3: {fileID: -7803065417098437583, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}

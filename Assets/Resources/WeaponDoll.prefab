@@ -60,6 +60,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -98,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Damage: 0
   Condition: 0
+  Clip: 0
   CountOfBullets: 0
   Price: 0
   Skin: 0
@@ -106,7 +108,9 @@ MonoBehaviour:
   Default: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   Name: 
   NumberOfWeaponInInventory: 0
+  PositionOnField: 0
   InHands: 0
+  IsActive: 0
   Skin1: {fileID: 5601323976189978565, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
   Skin2: {fileID: -761887118410055393, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
   Skin3: {fileID: 9147546874185701050, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
@@ -161,7 +165,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 0.24, y: 0.24}
   m_EdgeRadius: 0
 --- !u!82 &-3693023289686942725
 AudioSource:

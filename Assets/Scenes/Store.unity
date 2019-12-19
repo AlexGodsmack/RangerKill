@@ -2088,6 +2088,7 @@ MonoBehaviour:
   PlayerSource: PlayerSource
   WeaponBundle: WeaponBundle
   InventorySettings: InventorySettings
+  MapGen: MapGen
   BulletsInStore: BulletsInStore
   CountOfAll: CountOfAll
   StartHealthOfPers: StartHealthOfPers
@@ -2220,6 +2221,8 @@ MonoBehaviour:
   NextSelected: {fileID: 1859161709}
   AdditionalObject: {fileID: 0}
   RepairPrice: 0
+  Columns: 10
+  Rows: 10
 --- !u!1 &166949368
 GameObject:
   m_ObjectHideFlags: 0

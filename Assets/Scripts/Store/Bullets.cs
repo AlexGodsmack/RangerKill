@@ -13,6 +13,8 @@ public class Bullets : MonoBehaviour
     public int ClipOfWeapon;
     public string Name;
     public bool Bought = false;
+    public Material Default;
+    public Material Additive;
 
     public Sprite skin1;
     public Sprite skin2;
@@ -113,7 +115,6 @@ public class Bullets : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Bought == true) {
@@ -147,6 +148,52 @@ public class Bullets : MonoBehaviour
             if (BulletsSkin == 10) {
                 this.GetComponent<SpriteRenderer>().sprite = Boughtskin10;
             }
+
+            this.GetComponent<SpriteRenderer>().material = Additive;
+
+        } else {
+            if (BulletsSkin == 1)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin1;
+            }
+            if (BulletsSkin == 2)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin2;
+            }
+            if (BulletsSkin == 3)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin3;
+            }
+            if (BulletsSkin == 4)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin4;
+            }
+            if (BulletsSkin == 5)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin5;
+            }
+            if (BulletsSkin == 6)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin6;
+            }
+            if (BulletsSkin == 7)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin7;
+            }
+            if (BulletsSkin == 8)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin8;
+            }
+            if (BulletsSkin == 9)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin9;
+            }
+            if (BulletsSkin == 10)
+            {
+                this.GetComponent<SpriteRenderer>().sprite = skin10;
+            }
+
+            this.GetComponent<SpriteRenderer>().material = Default;
 
         }
     }

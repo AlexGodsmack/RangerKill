@@ -9,6 +9,7 @@ public class WeaponProperties : MonoBehaviour
 
     public int Damage;
     public int Condition;
+    public int Clip;
     public int CountOfBullets;
     public int Price;
     public int Skin;
@@ -43,76 +44,75 @@ public class WeaponProperties : MonoBehaviour
     public Sprite BoughtSkin9;
     public Sprite BoughtSkin10;
 
-    // Start is called before the first frame update
     void Start()
     {
 
         if (Skin == 1) {
             Damage = 10;
-            CountOfBullets = 15;
+            Clip = 15;
             Price = Damage * Condition + 15;
             this.GetComponent<SpriteRenderer>().sprite = Skin1;
             Name = "AK-45";
         }
         if (Skin == 2) {
             Damage = 30;
-            CountOfBullets = 20;
+            Clip = 20;
             Price = Damage * Condition + 25;
             this.GetComponent<SpriteRenderer>().sprite = Skin2;
             Name = "M-16";
         }
         if (Skin == 3) {
             Damage = 40;
-            CountOfBullets = 12;
+            Clip = 12;
             Price = Damage * Condition + 35;
             this.GetComponent<SpriteRenderer>().sprite = Skin3;
             Name = "Desert-25";
         }
         if (Skin == 4) {
             Damage = 25;
-            CountOfBullets = 25;
+            Clip = 25;
             Price = Damage * Condition + 20;
             this.GetComponent<SpriteRenderer>().sprite = Skin4;
             Name = "G-61";
         }
         if (Skin == 5) {
             Damage = 20;
-            CountOfBullets = 12;
+            Clip = 12;
             Price = Damage * Condition + 15;
             this.GetComponent<SpriteRenderer>().sprite = Skin5;
             Name = "P-11";
         }
         if (Skin == 6) {
             Damage = 15;
-            CountOfBullets = 24;
+            Clip = 24;
             Price = Damage * Condition + 10;
             this.GetComponent<SpriteRenderer>().sprite = Skin6;
             Name = "K-100";
         }
         if (Skin == 7) {
             Damage = 35;
-            CountOfBullets = 9;
+            Clip = 9;
             Price = Damage * Condition + 20;
             this.GetComponent<SpriteRenderer>().sprite = Skin7;
             Name = "2-barreled gun";
         }
         if (Skin == 8) {
             Damage = 45;
-            CountOfBullets = 5;
+            Clip = 5;
             Price = Damage * Condition + 40;
             this.GetComponent<SpriteRenderer>().sprite = Skin8;
             Name = "Riffle";
         }
         if (Skin == 9) {
             Damage = 50;
-            CountOfBullets = 2;
+            Clip = 2;
             Price = Damage * Condition + 60;
             this.GetComponent<SpriteRenderer>().sprite = Skin9;
             Name = "PMG-1";
         }
         if (Skin == 10) {
             Damage = 65;
-            CountOfBullets = 1;
+            Clip = 1;
             Price = Damage * Condition + 80;
             this.GetComponent<SpriteRenderer>().sprite = Skin10;
             Name = "RPG-3";
@@ -222,7 +222,7 @@ public class WeaponProperties : MonoBehaviour
             this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
         }
 
-        if (this.transform.parent.name == "PersPackCage")
+        if (this.transform.parent.name == "PersPackCage" || this.transform.parent.name == "Stuff")
         {
             this.gameObject.layer = 18;
         }

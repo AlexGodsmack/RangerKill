@@ -10,6 +10,7 @@ public class PersProperties : MonoBehaviour
 {
 
     public int Health;
+    public int FullHealth;
     public int Damage;
     public int Level;
     public int Accuracy;
@@ -22,7 +23,6 @@ public class PersProperties : MonoBehaviour
     public bool ShowHealthBar = false;
     public int WeaponInHands = 0;
     public int WeaponSkin;
-    //public int CountStuffInPack = 0;
     public string[] Package;
 
     public GameObject HealthProgressBar;
@@ -33,8 +33,6 @@ public class PersProperties : MonoBehaviour
     public GameObject PersPack;
 
     public int PowerOfShot;
-
-    //public Material Additive;
 
     public Sprite SkinSprite1;
     public Sprite SkinSprite2;
@@ -102,7 +100,7 @@ public class PersProperties : MonoBehaviour
             GetWeapon.layer = 18;
             GetWeapon.GetComponent<WeaponProperties>().Damage = int.Parse(PlayerSet[2 + CountOfBoughtPers * NumPersParam + WeaponInHands * NumWpnParam - NumWpnParam + 1]);
             GetWeapon.GetComponent<WeaponProperties>().Condition = int.Parse(PlayerSet[2 + CountOfBoughtPers * NumPersParam + WeaponInHands * NumWpnParam - NumWpnParam + 2]);
-            GetWeapon.GetComponent<WeaponProperties>().CountOfBullets = int.Parse(PlayerSet[2 + CountOfBoughtPers * NumPersParam + WeaponInHands * NumWpnParam - NumWpnParam + 3]);
+            GetWeapon.GetComponent<WeaponProperties>().Clip = int.Parse(PlayerSet[2 + CountOfBoughtPers * NumPersParam + WeaponInHands * NumWpnParam - NumWpnParam + 3]);
             GetWeapon.GetComponent<WeaponProperties>().Price = int.Parse(PlayerSet[2 + CountOfBoughtPers * NumPersParam + WeaponInHands * NumWpnParam - NumWpnParam + 4]);
             GetWeapon.GetComponent<WeaponProperties>().Skin = int.Parse(PlayerSet[2 + CountOfBoughtPers * NumPersParam + WeaponInHands * NumWpnParam - NumWpnParam + 5]);
             GetWeapon.GetComponent<WeaponProperties>().NumberOfWeaponInInventory = WeaponInHands;

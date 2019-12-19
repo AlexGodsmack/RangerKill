@@ -31,14 +31,18 @@ public class InventoryWorking : MonoBehaviour
     public GameObject AdditionalObject;
 
     public int RepairPrice;
+    public int Columns;
+    public int Rows;
 
     private string[] PlayerSrc;
     private string[] InvSet;
     private string[] CountOfAll;
+    private string[] MapGen;
 
     private string PlayerSourcePath;
     private string InvSetPath;
     private string CountOfAllPath;
+    private string MapGenPath;
 
     private int CoBPerses;
     private int CoBWeapon;
@@ -52,9 +56,6 @@ public class InventoryWorking : MonoBehaviour
 
     void OnEnable ()
     {
-       // Debug.Log("Start");
-        //InvStuff.active = false;
-        //PersPackage.active = false;
 
         PlayerSourcePath = Application.persistentDataPath + "/PlayerSource.txt";
         PlayerSrc = File.ReadAllLines(PlayerSourcePath);
@@ -64,6 +65,9 @@ public class InventoryWorking : MonoBehaviour
 
         CountOfAllPath = Application.persistentDataPath + "/CountOfAll.txt";
         CountOfAll = File.ReadAllLines(CountOfAllPath);
+
+        MapGenPath = Application.persistentDataPath + "/MapGen.txt";
+        MapGen = File.ReadAllLines(MapGenPath);
 
         CoBPerses = int.Parse(CountOfAll[0]);
         CoBWeapon = int.Parse(CountOfAll[1]);
@@ -95,6 +99,8 @@ public class InventoryWorking : MonoBehaviour
         InvProperties.active = true;
         PersPackage.active = true;
 
+        GoToMap.interactable = true;
+
         for (int p = 1; p < 10; p++) {
             if (GameObject.Find(InvPers.name + "/Pers" + p.ToString()) != null) {
                 Destroy(GameObject.Find(InvPers.name + "/Pers" + p.ToString()));
@@ -121,11 +127,11 @@ public class InventoryWorking : MonoBehaviour
             }
         }
 
-        //====================================================================================================================================
-        //======================================================= GENERATE INVENTORY =========================================================
-        //====================================================================================================================================
+        ///====================================================================================================================================
+        ///======================================================= GENERATE INVENTORY =========================================================
+        ///====================================================================================================================================
 
-        //********************************************************* Import Perses ************************************************************
+        ///********************************************************* Import Perses ************************************************************
 
         for (int b = 1; b < CoBPerses + 1; b++)
         {
@@ -192,21 +198,15 @@ public class InventoryWorking : MonoBehaviour
             for (int s = 1; s < 10; s++) {
                 if (InvSet[48 + s] != "undefined") {
                     if (int.Parse(InvSet[48 + s]) == b) {
-                        //if (YourBoughtPers.GetComponent<PersProperties>().Package[0] == "None") {
-                        //    YourBoughtPers.GetComponent<PersProperties>().Package[PlaceInPack] = "Stuff" + s.ToString();
-                        //    //PlaceInPack = PlaceInPack + 1;
-                        //}
-                        //else {
                         YourBoughtPers.GetComponent<PersProperties>().Package[PlaceInPack] = "Stuff" + s.ToString();
                         PlaceInPack = PlaceInPack + 1;
-                        //}
                     }
                 }
             }
 
         }
 
-        //********************************************************* Import Weapon ************************************************************
+        ///********************************************************* Import Weapon ************************************************************
 
         int PosOfUnusedItem = 0;
 
@@ -223,7 +223,7 @@ public class InventoryWorking : MonoBehaviour
                 GameObject.Find(InvWeap.name + "/InvWpn" + PosOfUnusedItem.ToString()).GetComponent<WarriorSettings>().Full = true;
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Damage = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 1]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Condition = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 2]);
-                YourBoughtWeapon.GetComponent<WeaponProperties>().CountOfBullets = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 3]);
+                YourBoughtWeapon.GetComponent<WeaponProperties>().Clip = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 3]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Price = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 4]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 5]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().NumberOfWeaponInInventory = m;
@@ -233,10 +233,9 @@ public class InventoryWorking : MonoBehaviour
             {
                 YourBoughtWeapon.name = "Weapon" + m.ToString();
                 YourBoughtWeapon.transform.SetParent(PersPackage.transform);
-                //YourBoughtWeapon.transform.localPosition = GameObject.Find("PersPack1").transform.localPosition;
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Damage = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 1]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Condition = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 2]);
-                YourBoughtWeapon.GetComponent<WeaponProperties>().CountOfBullets = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 3]);
+                YourBoughtWeapon.GetComponent<WeaponProperties>().Clip = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 3]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Price = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 4]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CoBPerses * NumPersParam + m * NumWpnParam - NumWpnParam + 5]);
                 YourBoughtWeapon.GetComponent<WeaponProperties>().NumberOfWeaponInInventory = m;
@@ -253,9 +252,10 @@ public class InventoryWorking : MonoBehaviour
 
         }
 
-        //********************************************************* Import Stuff ************************************************************
+        ///********************************************************* Import Stuff ************************************************************
 
         PosOfUnusedItem = 0;
+        int Container = 0;
 
         for (int s = 1; s < CoBStuff + 1; s++)
         {
@@ -279,23 +279,15 @@ public class InventoryWorking : MonoBehaviour
                 YourBoughtStuff.GetComponent<OtherStuff>().NumberOfStuffInInv = s;
                 YourBoughtStuff.transform.SetParent(PersPackage.transform);
 
-                //GameObject Pers = GameObject.Find(InvPers.name + "/Pers" + NumberOfPers);
-
-                //for (int i = 0; i < 4; i++)
-                //{
-                //    if (Pers.GetComponent<PersProperties>().Package[i] == YourBoughtStuff.name) {
-                //        //Pers.GetComponent<PersProperties>().Package[i] = YourBoughtStuff.name;
-                //        YourBoughtStuff.transform.localPosition = GameObject.Find(PersPackage.name + "/PersPack" + (1 + i).ToString()).transform.localPosition;
-                //        Debug.Log(i);
-                //        break;
-                //    }
-                //}
-
                 YourBoughtStuff.GetComponent<OtherStuff>().Skin = int.Parse(PlayerSrc[2 + CoBPerses * NumPersParam + CoBWeapon * NumWpnParam + CoBBullets * 3 + s * 2 - 1]);
                 YourBoughtStuff.GetComponent<OtherStuff>().Bought = true;
                 YourBoughtStuff.layer = 18;
                 YourBoughtStuff.GetComponent<SpriteRenderer>().enabled = false;
                 YourBoughtStuff.GetComponent<Collider2D>().enabled = false;
+            }
+
+            if (YourBoughtStuff.GetComponent<OtherStuff>().Skin == 2) {
+                YourBoughtStuff.GetComponent<OtherStuff>().WaterLiters = int.Parse(MapGen[2 * Columns * Rows + 12 + 10 + 6 + s]);
             }
 
             GameObject L = Instantiate(Resources.Load("Lighter_03")) as GameObject;
@@ -304,23 +296,8 @@ public class InventoryWorking : MonoBehaviour
             L.transform.localPosition = new Vector3(0, 0, -0.1f);
         }
 
-        for (int p = 1; p < CoBPerses + 1; p++) {
-
-            GameObject Pers = GameObject.Find(InvPers.name + "/Pers" + p.ToString());
-            for (int inv = 0; inv < 4; inv++) {
-                if (Pers.GetComponent<PersProperties>().Package[inv] != "None") {
-                    GameObject PackStuff = GameObject.Find(PersPackage.name + "/" + Pers.GetComponent<PersProperties>().Package[inv].ToString());
-                    PackStuff.transform.localPosition = PersPackage.transform.GetChild(inv).gameObject.transform.localPosition;
-                    Debug.Log(PersPackage.transform.GetChild(inv).name);
-                }
-            }
-
-        }
-
-        //InvWeap.active = false;
         InvStuff.active = false;
         PersPackage.active = false;
-        //InvCanvasPanel.active = false;
 
         StuffToWeapon.isOn = true;
 
@@ -355,6 +332,7 @@ public class InventoryWorking : MonoBehaviour
                     }
                     if (PrevSelected.layer == 9) {
                         SetWeaponToPers();
+                        ActivateAllPerses();
                     }
                     if (PrevSelected.layer == 10) {
                         PersInfo();
@@ -363,6 +341,7 @@ public class InventoryWorking : MonoBehaviour
                     }
                     if (PrevSelected.layer == 19) {
                         SetStuffToPers();
+                        ActivateAllPerses();
                     }
 
                 }
@@ -370,6 +349,7 @@ public class InventoryWorking : MonoBehaviour
                 if (InvStuff.active == true) {
 
                     if (NextSelected.layer == 19) {
+                        CloseFullPers();
                         if (PrevSelected.layer == 0) {
                             StuffInfo();
                             ClosePersesFields();
@@ -426,6 +406,8 @@ public class InventoryWorking : MonoBehaviour
                 if (InvWeap.active == true) {
 
                     if (NextSelected.layer == 9) {
+                        CloseFullPers();
+                        CloseArmoredPers();
                         if (PrevSelected.layer == 0) {
                             WeaponInfo();
                             ClosePersesFields();
@@ -468,6 +450,7 @@ public class InventoryWorking : MonoBehaviour
                         if (PrevSelected.layer == 9) {
                             SetWeaponInPlace();
                             CloseWeaponFields();
+                            ActivateAllPerses();
                         }
                         if (PrevSelected.layer == 18) {
                             PutWeaponBack();
@@ -514,6 +497,13 @@ public class InventoryWorking : MonoBehaviour
             }
         }
 
+        for (int inv = 0; inv < 4; inv++)
+        {
+            if (NextSelected.GetComponent<PersProperties>().Package[inv] != "None")
+            {
+            }
+        }
+
         for (int i = 0; i < 4; i++) {
             if (NextSelected.GetComponent<PersProperties>().Package[i] == "None") {
                 GameObject.Find(PersPackage.name + "/PersPack" + (i + 1).ToString()).GetComponent<SpriteRenderer>().enabled = true;
@@ -521,6 +511,7 @@ public class InventoryWorking : MonoBehaviour
             else {
                 GameObject Item = GameObject.Find(PersPackage.name + "/" + NextSelected.GetComponent<PersProperties>().Package[i].ToString());
                 Item.GetComponent<SpriteRenderer>().enabled = true;
+                Item.transform.localPosition = PersPackage.transform.GetChild(i).gameObject.transform.localPosition;
 
                 if (InvWeap.active == true) {
 
@@ -591,7 +582,7 @@ public class InventoryWorking : MonoBehaviour
         string Name = NextSelected.GetComponent<WeaponProperties>().Name;
         int Damage = NextSelected.GetComponent<WeaponProperties>().Damage;
         int Condition = NextSelected.GetComponent<WeaponProperties>().Condition;
-        int COB = NextSelected.GetComponent<WeaponProperties>().CountOfBullets;
+        int COB = NextSelected.GetComponent<WeaponProperties>().Clip;
         int KindOfWeapon = NextSelected.GetComponent<WeaponProperties>().Skin;
 
         int Bullets = 0;
@@ -634,7 +625,7 @@ public class InventoryWorking : MonoBehaviour
 
     void SetWeaponToPers() {
 
-        InvWeap.GetComponent<AudioSource>().Play();
+        InvPers.GetComponent<AudioSource>().Play();
 
         int OldPos = PrevSelected.GetComponent<WeaponProperties>().PositionOnField;
         GameObject.Find(InvWeap.name + "/InvWpn" + OldPos.ToString()).GetComponent<WarriorSettings>().Full = false;
@@ -673,7 +664,7 @@ public class InventoryWorking : MonoBehaviour
 
     void PutWeaponBack() {
 
-        InvPers.GetComponent<AudioSource>().Play();
+        InvWeap.GetComponent<AudioSource>().Play();
 
         PrevSelected.GetComponent<WeaponProperties>().IsActive = false;
         PrevSelected.GetComponent<WeaponProperties>().Bought = false;
@@ -686,11 +677,19 @@ public class InventoryWorking : MonoBehaviour
         AdditionalObject.GetComponent<PersProperties>().WeaponSkin = 0;
         GameObject.Find(AdditionalObject.name + "/Lighter").active = false;
 
+        int SubstractWeap = 0;
+
         for (int w = 0; w < 4; w++) {
             if (AdditionalObject.GetComponent<PersProperties>().Package[w] == PrevSelected.name) {
-                AdditionalObject.GetComponent<PersProperties>().Package[w] = "None";
+                SubstractWeap = w;
             }
         }
+
+        for (int w = SubstractWeap; w < 3; w++) {
+            AdditionalObject.GetComponent<PersProperties>().Package[w] = AdditionalObject.GetComponent<PersProperties>().Package[w + 1];
+        }
+
+        AdditionalObject.GetComponent<PersProperties>().Package[3] = "None";
 
         NextSelected.GetComponent<WarriorSettings>().Full = true;
 
@@ -736,6 +735,9 @@ public class InventoryWorking : MonoBehaviour
         NextSelected.GetComponent<AudioSource>().Play();
         GameObject.Find(InvStuff.name + "/" + NextSelected.name + "/Lighter").active = true;
         InvINFO.text = NextSelected.GetComponent<OtherStuff>().Description;
+        if (NextSelected.GetComponent<OtherStuff>().Skin == 2) {
+            InvINFO.text = InvINFO.text + "\nLiters: " + NextSelected.GetComponent<OtherStuff>().WaterLiters.ToString();
+        }
         PersPackage.active = false;
 
     }
@@ -831,11 +833,22 @@ public class InventoryWorking : MonoBehaviour
 
         GameObject.Find(AdditionalObject.name + "/Lighter").active = false;
 
-        for (int a = 0; a < 4; a++) {
-            if (AdditionalObject.GetComponent<PersProperties>().Package[a] == PrevSelected.name) {
-                AdditionalObject.GetComponent<PersProperties>().Package[a] = "None";
+        int SubstractStuff = 0;
+
+        for (int s = 0; s < 4; s++)
+        {
+            if (AdditionalObject.GetComponent<PersProperties>().Package[s] == PrevSelected.name)
+            {
+                SubstractStuff = s;
             }
         }
+
+        for (int s = SubstractStuff; s < 3; s++)
+        {
+            AdditionalObject.GetComponent<PersProperties>().Package[s] = AdditionalObject.GetComponent<PersProperties>().Package[s + 1];
+        }
+
+        AdditionalObject.GetComponent<PersProperties>().Package[3] = "None";
 
         NextSelected.GetComponent<WarriorSettings>().Full = true;
         ResetInfoScreen();
@@ -905,6 +918,22 @@ public class InventoryWorking : MonoBehaviour
         }
     }
 
+    void CloseArmoredPers() {
+        for (int i = 1; i < CoBPerses + 1; i++) {
+            if (GameObject.Find(InvPers.name + "/Pers" + i.ToString()).GetComponent<PersProperties>().WeaponInHands != 0) {
+                GameObject.Find(InvPers.name + "/Pers" + i.ToString()).GetComponent<Collider2D>().enabled = false;
+            }
+        }
+    }
+
+    void CloseFullPers() {
+        for (int i = 1; i < CoBPerses + 1; i++) {
+            if (GameObject.Find(InvPers.name + "/Pers" + i.ToString()).GetComponent<PersProperties>().Package[3] != "None") {
+                GameObject.Find(InvPers.name + "/Pers" + i.ToString()).GetComponent<Collider2D>().enabled = false;
+            }
+        }
+    }
+
     //====================================================================================================================================
     //======================================================= Opening Fields =============================================================
     //====================================================================================================================================
@@ -929,8 +958,14 @@ public class InventoryWorking : MonoBehaviour
         }
     }
 
+    void ActivateAllPerses() {
+        for (int i = 1; i < CoBPerses + 1; i++) {
+            GameObject.Find(InvPers.name + "/Pers" + i.ToString()).GetComponent<Collider2D>().enabled = true;
+        }
+    }
+
     //====================================================================================================================================
-    //======================================================= Swwitch Inventory =============================================================
+    //======================================================= Switch Inventory =============================================================
     //====================================================================================================================================
 
     public void InventorySwitcher(bool isOn)
@@ -946,6 +981,7 @@ public class InventoryWorking : MonoBehaviour
             InvStuff.active = false;
             PrevSelected = GameObject.Find(InvPers.name + "/DummySwitcherBought");
             NextSelected = GameObject.Find(InvPers.name + "/DummySwitcherBought");
+            ActivateAllPerses();
             ResetInfoScreen();
         }
         else if(isOn == false)
@@ -958,6 +994,7 @@ public class InventoryWorking : MonoBehaviour
             InvStuff.active = true;
             PrevSelected = GameObject.Find(InvPers.name + "/DummySwitcherBought");
             NextSelected = GameObject.Find(InvPers.name + "/DummySwitcherBought");
+            ActivateAllPerses();
             ResetInfoScreen();
         }
     }
@@ -983,45 +1020,18 @@ public class InventoryWorking : MonoBehaviour
                 NewInvSet[37 + Pers.GetComponent<PersProperties>().WeaponInHands] = "true";
             } else if(Pers.GetComponent<PersProperties>().WeaponInHands == 0){
                 NewInvSet[21 + p] = "NaN";
-                //NewInvSet[37 + Pers.GetComponent<PersProperties>().WeaponInHands] = "false";
             }
-
-            //if (Pers.GetComponent<PersProperties>().Package[1] != "None") {
-            //    GameObject Stuff = GameObject.Find(PersPackage.name + "/" + Pers.GetComponent<PersProperties>().Package[1].ToString());
-            //    NewInvSet[48 + Stuff.GetComponent<OtherStuff>().NumberOfStuffInInv] = Pers.GetComponent<PersProperties>().NumberOfPersInInventory.ToString();
-            //}
-            //if (Pers.GetComponent<PersProperties>().Package[2] != "None") {
-            //    GameObject Stuff = GameObject.Find(PersPackage.name + "/" + Pers.GetComponent<PersProperties>().Package[2].ToString());
-            //    NewInvSet[48 + Stuff.GetComponent<OtherStuff>().NumberOfStuffInInv] = Pers.GetComponent<PersProperties>().NumberOfPersInInventory.ToString();
-            //}
-            //if (Pers.GetComponent<PersProperties>().Package[3] != "None") {
-            //    GameObject Stuff = GameObject.Find(PersPackage.name + "/" + Pers.GetComponent<PersProperties>().Package[3].ToString());
-            //    NewInvSet[48 + Stuff.GetComponent<OtherStuff>().NumberOfStuffInInv] = Pers.GetComponent<PersProperties>().NumberOfPersInInventory.ToString();
-            //}
-
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    if (Pers.GetComponent<PersProperties>().Package[i] != "None")
-            //    {
-            //        GameObject Item = GameObject.Find(PersPackage.name + "/" + Pers.GetComponent<PersProperties>().Package[i].ToString());
-            //        if (Item.GetComponent<OtherStuff>() != null)
-            //        {
-            //            NewInvSet[48 + Item.GetComponent<OtherStuff>().NumberOfStuffInInv] = Pers.GetComponent<PersProperties>().NumberOfPersInInventory.ToString();
-            //        }
-            //    }
-            //}
         }
 
         int FindWeap = InvWeap.transform.childCount;
-        for (int w = 0; w < FindWeap; w++)
-        {
-            if (InvWeap.transform.GetChild(w).gameObject.layer == 9)
-            {
+        for (int w = 0; w < FindWeap; w++) {
+            if (InvWeap.transform.GetChild(w).gameObject.layer == 9) {
                 GameObject ThisWeap = InvWeap.transform.GetChild(w).gameObject;
                 NewInvSet[37 + ThisWeap.GetComponent<WeaponProperties>().NumberOfWeaponInInventory] = "false";
-                //Debug.Log("WeapReady");
             }
         }
+
+        string[] MapGenNew = MapGen;
 
         int StuffInPack = PersPackage.transform.childCount;
         for (int s = 0; s < StuffInPack; s++) {
@@ -1029,6 +1039,9 @@ public class InventoryWorking : MonoBehaviour
                 int NumOfPers = PersPackage.transform.GetChild(s).gameObject.GetComponent<OtherStuff>().WhichPersUseIt;
                 int NumOfStuff = PersPackage.transform.GetChild(s).gameObject.GetComponent<OtherStuff>().NumberOfStuffInInv;
                 NewInvSet[48 + NumOfStuff] = NumOfPers.ToString();
+                if (PersPackage.transform.GetChild(s).gameObject.GetComponent<OtherStuff>().Skin == 2) {
+                    MapGenNew[2 * Columns * Rows + 12 + 10 + 6 + PersPackage.transform.GetChild(s).gameObject.GetComponent<OtherStuff>().NumberOfStuffInInv] = PersPackage.transform.GetChild(s).gameObject.GetComponent<OtherStuff>().WaterLiters.ToString();
+                }
             }
         }
 
@@ -1037,9 +1050,13 @@ public class InventoryWorking : MonoBehaviour
             if (InvStuff.transform.GetChild(s).gameObject.layer == 19) {
                 GameObject ThisStuff = InvStuff.transform.GetChild(s).gameObject;
                 NewInvSet[48 + ThisStuff.GetComponent<OtherStuff>().NumberOfStuffInInv] = "undefined";
+                if (ThisStuff.GetComponent<OtherStuff>().Skin == 2) {
+                    MapGenNew[2 * Columns * Rows + 12 + 10 + 6 + ThisStuff.GetComponent<OtherStuff>().NumberOfStuffInInv] = ThisStuff.GetComponent<OtherStuff>().WaterLiters.ToString();
+                }
             }
         }
 
+        File.WriteAllLines(MapGenPath, MapGenNew);
         File.WriteAllLines(InvSetPath, NewInvSet);
 
         InvWeap.active = false;
@@ -1047,6 +1064,8 @@ public class InventoryWorking : MonoBehaviour
         InvPers.active = false;
         InvProperties.active = false;
         PersPackage.active = false;
+
+        GoToMap.interactable = false;
 
     }
 

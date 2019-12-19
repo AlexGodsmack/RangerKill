@@ -14,10 +14,12 @@ public class MainMap : MonoBehaviour {
     public GameObject MapSprites;
     public GameObject HeroGoal;
     public GameObject UIField;
+    public GameObject ContainerForStuff;
     public Button GoToBattle, Cancel, Menu, Back, Quit, Left, Up, Down, Right;
+    public Text InfoScreen;
     public string EnemiesProps;
 
-    public string MapGen;
+    //public string MapGen;
 
     public int Columns;
     public int Rows;
@@ -28,8 +30,8 @@ public class MainMap : MonoBehaviour {
     public int RandomInt;
     public int NumberOFActiveBand = 0;
     public bool StayOnStore = false;
+    public bool GO = false;
 
-    private bool GO = false;
     private float dist;
     private Vector3 newHeroPos;
     private Vector3 mousePos;
@@ -37,22 +39,63 @@ public class MainMap : MonoBehaviour {
 
     private string MapGenPath;
     private string EnemiesPropsPath;
+    private string PlaySetPath;
+    private string CountOfAllPath;
+    private string InvSetPath;
 
     private Vector3 OldPosHero;
     private Vector3 Hypotenuse;
     private float MotionCounter;
     private float Seconds = 0.0f;
+    private float WaterDecrease = 0.0f;
 
     private float MovingMapStep = 0.2f;
+
+    private string[] CountOfAll;
+    private string[] PlaySet;
+    private string[] MapGen;
+    private string[] InvSet;
+
+    private int CoPers;
+    private int CoWeap;
+    private int CoBullet;
+    private int CoStuff;
+    private int NumPersParam = 8;
+    private int NumWpnParam = 6;
+
+    private int WaterLiters;
 
     //===================================================================================================================================================
 
     void Start () {
 
+        //================================================================ Import Data =====================================================================
+
+        CountOfAllPath = Application.persistentDataPath + "/CountOfAll.txt";
+        CountOfAll = File.ReadAllLines(CountOfAllPath);
+        PlaySetPath = Application.persistentDataPath + "/PlayerSource.txt";
+        PlaySet = File.ReadAllLines(PlaySetPath);
+        MapGenPath = Application.persistentDataPath + "/MapGen.txt";
+        MapGen = File.ReadAllLines(MapGenPath);
+        InvSetPath = Application.persistentDataPath + "/InventorySettings.txt";
+        InvSet = File.ReadAllLines(InvSetPath);
+
+        CoPers = int.Parse(CountOfAll[0]);
+        CoWeap = int.Parse(CountOfAll[1]);
+        CoBullet = int.Parse(CountOfAll[2]);
+        CoStuff = int.Parse(CountOfAll[3]);
+
+        WaterLiters = 0;
+
+        for (int i = 1; i < 11; i++) {
+            if (MapGen[2 * Columns * Rows + 12 + 10 + 6 + i] != "Empty") {
+                WaterLiters = WaterLiters + int.Parse(MapGen[2 * Columns * Rows + 12 + 10 + 6 + i]);
+            }
+        }
+
         //================================================================ Generate Map =====================================================================
 
         UIField.transform.position = Down.transform.position;
-        MapGenPath = Application.persistentDataPath + "/" + MapGen + ".txt";
 
         float StartPosX = WidthOfCell / 2 - (Columns * WidthOfCell) / 2;
         float StartPosY = Rows * HeightOfCell / 2 - HeightOfCell / 2;
@@ -60,17 +103,13 @@ public class MainMap : MonoBehaviour {
         float NewX = StartPosX;
         float NewY = StartPosY;
 
-        //MainHero = Instantiate(Resources.Load("PlayerChip")) as GameObject;
-        //MainHero.name = "MainHero";
-        //MainHero.transform.SetParent(MapSprites.transform);
-
         int countColumn = 1;
 
         for (int c = 1; c < Rows * Columns + 1; c++) {
 
             GameObject NewTile = Instantiate(Resources.Load("TileMapDoll")) as GameObject;
-            NewTile.GetComponent<Tile>().NumberOfTile = int.Parse(File.ReadAllLines(MapGenPath)[2 * c - 2]);
-            NewTile.GetComponent<Tile>().HaveSmoke = bool.Parse(File.ReadAllLines(MapGenPath)[2 * c - 1]);
+            NewTile.GetComponent<Tile>().NumberOfTile = int.Parse(MapGen[2 * c - 2]);
+            NewTile.GetComponent<Tile>().HaveSmoke = bool.Parse(MapGen[2 * c - 1]);
             NewTile.name = "Tile" + (c).ToString();
             NewTile.transform.SetParent(MapSprites.transform);
             NewTile.transform.localPosition = new Vector3(NewX, NewY, 0);
@@ -92,10 +131,10 @@ public class MainMap : MonoBehaviour {
 
             GameObject NewBand = Instantiate(Resources.Load("BanditsAreaDoll")) as GameObject;
             NewBand.name = "BAND_" + f.ToString();
-            NewBand.GetComponent<BanditsAreaDoll>().NumberOfBand = int.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + f * 4 - 4 + 1]);
-            NewBand.GetComponent<BanditsAreaDoll>().SizeOfArea = int.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + f * 4 - 4 + 2]);
+            NewBand.GetComponent<BanditsAreaDoll>().NumberOfBand = int.Parse(MapGen[2 * Columns * Rows + f * 4 - 4 + 1]);
+            NewBand.GetComponent<BanditsAreaDoll>().SizeOfArea = int.Parse(MapGen[2 * Columns * Rows + f * 4 - 4 + 2]);
             NewBand.transform.SetParent(MapSprites.transform);
-            Vector3 NewPosition = GameObject.Find(MapSprites.name + "/Tile" + int.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + f * 4 - 4 + 3].ToString())).transform.localPosition;
+            Vector3 NewPosition = GameObject.Find(MapSprites.name + "/Tile" + int.Parse(MapGen[2 * Columns * Rows + f * 4 - 4 + 3].ToString())).transform.localPosition;
             NewBand.transform.localPosition = new Vector3(NewPosition.x, NewPosition.y, NewPosition.z - 1);
 
         }
@@ -104,13 +143,13 @@ public class MainMap : MonoBehaviour {
             GameObject NewStore = Instantiate(Resources.Load("StoresDoll")) as GameObject;
             NewStore.name = "Store" + s.ToString();
             NewStore.transform.SetParent(MapSprites.transform);
-            Vector3 NewPosition = GameObject.Find(MapSprites.name + "/Tile" + int.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + 12 + 2 * s - 2 + 1]).ToString()).transform.localPosition;
+            Vector3 NewPosition = GameObject.Find(MapSprites.name + "/Tile" + int.Parse(MapGen[2 * Columns * Rows + 12 + 2 * s - 2 + 1]).ToString()).transform.localPosition;
             NewStore.transform.localPosition = new Vector3(NewPosition.x, NewPosition.y, NewPosition.z - 1);
         }
-        float MapX = float.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + 12 + 10 + 1]);
-        float MapY = float.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + 12 + 10 + 2]);
-        float HeroX = float.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + 12 + 10 + 4]);
-        float HeroY = float.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + 12 + 10 + 5]);
+        float MapX = float.Parse(MapGen[2 * Columns * Rows + 12 + 10 + 1]);
+        float MapY = float.Parse(MapGen[2 * Columns * Rows + 12 + 10 + 2]);
+        float HeroX = float.Parse(MapGen[2 * Columns * Rows + 12 + 10 + 4]);
+        float HeroY = float.Parse(MapGen[2 * Columns * Rows + 12 + 10 + 5]);
         MapSprites.transform.localPosition = new Vector3( MapX, MapY, MapSprites.transform.localPosition.z);
         MainHero.transform.localPosition = new Vector3(HeroX, HeroY, MainHero.transform.localPosition.z);
 
@@ -125,6 +164,8 @@ public class MainMap : MonoBehaviour {
         Right.onClick.AddListener(RightClick);
 
         HeroGoal.transform.localPosition = MainHero.transform.localPosition + new Vector3(0, 0, 1);
+
+        //ScreenMonitoring();
 
 	}
 
@@ -215,12 +256,48 @@ public class MainMap : MonoBehaviour {
         SceneManager.LoadScene(0);
     }
 
-    void SaveAndEscape() {
+    public void SaveAndEscape() {
+
+        CoStuff = ContainerForStuff.GetComponent<PackageOnMap>().CoStuff;
+        string[] NewInvSet = InvSet;
+        string[] NewPlaySet = PlaySet;
+        string[] NewMapGen = MapGen;
+
+        StreamWriter NewCountWrite = new StreamWriter(CountOfAllPath);
+        NewCountWrite.WriteLine(CoPers);
+        NewCountWrite.WriteLine(CoWeap);
+        NewCountWrite.WriteLine(CoBullet);
+        NewCountWrite.WriteLine(CoStuff);
+        NewCountWrite.Close();
+
+        StreamWriter PlaySetWrite = new StreamWriter(PlaySetPath);
+
+        for (int i = 0; i < 2 + CoPers * NumPersParam + CoWeap * NumWpnParam + CoBullet * 3; i++) {
+            PlaySetWrite.WriteLine(NewPlaySet[i]);
+        }
+
+        for (int i = 0; i < CoStuff; i++) {
+            PlaySetWrite.WriteLine("=== Stuff " + (i + 1).ToString() + " ===");
+            PlaySetWrite.WriteLine(ContainerForStuff.GetComponent<PackageOnMap>().Skin[i]);
+        }
+
+        PlaySetWrite.Close();
+
+        for (int i = 1; i < 11; i++) {
+            if (ContainerForStuff.GetComponent<PackageOnMap>().Place[i - 1] != 0) {
+                NewInvSet[48 + i] = ContainerForStuff.GetComponent<PackageOnMap>().Place[i - 1].ToString();
+            } else {
+                NewInvSet[48 + i] = "undefined";
+            }
+        }
+
+        File.WriteAllLines(InvSetPath, NewInvSet);
 
         string[] GetMap = File.ReadAllLines(MapGenPath);
 
-        for (int c = 1; c < Rows * Columns + 1; c++) {
 
+        for (int c = 1; c < Rows * Columns + 1; c++)
+        {
             GetMap[2 * c - 1] = GameObject.Find(MapSprites.name + "/Tile" + c).GetComponent<Tile>().HaveSmoke.ToString();
         }
 
@@ -230,7 +307,40 @@ public class MainMap : MonoBehaviour {
         GetMap[2 * Columns * Rows + 12 + 10 + 4] = MainHero.transform.localPosition.x.ToString();
         GetMap[2 * Columns * Rows + 12 + 10 + 5] = MainHero.transform.localPosition.y.ToString();
 
+        //int UsedContainer = 0;
+
+        for (int i = 0; i < ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters.Length; i++) {
+            if (ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i] != 0) {
+                GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i].ToString();
+            } else {
+                GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = "Empty";
+            }
+            //if (ContainerForStuff.GetComponent<PackageOnMap>().Skin[i] == 2) {
+            //    if (ContainerForStuff.GetComponent<PackageOnMap>().Place[i] != 0) {
+            //        GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i].ToString();
+            //    }
+            //} else {
+            //    GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = "Empty";
+            //}
+            //if (ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i] == 0) {
+            //    GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = "Empty";
+            //} else {
+            //    GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i].ToString();
+            //}
+            //if (ContainerForStuff.GetComponent<PackageOnMap>().Skin[i] == 2) {
+            //    Container = Container + 1;
+            //if (ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i] == 0) {
+            //    if (ContainerForStuff.GetComponent<PackageOnMap>().Skin[i] != 2) {
+            //        GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = "Empty";
+            //    }
+            //}
+            //else {
+            //    GetMap[2 * Columns * Rows + 12 + 10 + 7 + i] = ContainerForStuff.GetComponent<PackageOnMap>().WaterLiters[i].ToString();
+            //}
+        }
+
         File.WriteAllLines(MapGenPath, GetMap);
+
     }
 
 //===================================================================================================================================================
@@ -313,6 +423,7 @@ public class MainMap : MonoBehaviour {
                 OldPosHero = MainHero.transform.position;
                 Hypotenuse = HeroGoal.transform.position - OldPosHero;
                 dist = Mathf.Sqrt(Hypotenuse.x * Hypotenuse.x + Hypotenuse.y * Hypotenuse.y);
+                WaterDecrease = 0.0f;
                 Seconds = dist;
                 GO = true;
             }
@@ -326,7 +437,7 @@ public class MainMap : MonoBehaviour {
         if (GO == true) {
             Seconds = Seconds - 0.001f * speed;
             MotionCounter = (dist - Seconds) / dist;
-            MainHero.transform.position = new Vector3(Mathf.Lerp(OldPosHero.x, HeroGoal.transform.position.x, MotionCounter), Mathf.Lerp(OldPosHero.y, HeroGoal.transform.position.y, MotionCounter), MainHero.transform.position.z);
+            MainHero.transform.position = new Vector3(Mathf.Lerp(OldPosHero.x, HeroGoal.transform.position.x, MotionCounter), Mathf.Lerp(OldPosHero.y, HeroGoal.transform.position.y, MotionCounter), MainHero.transform.position.z);;
             if (MotionCounter > 1) {
                 GO = false;
             }

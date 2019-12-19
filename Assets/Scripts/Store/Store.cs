@@ -77,6 +77,7 @@ public class Store : MonoBehaviour
     public string PlayerSource;
     public string WeaponBundle;
     public string InventorySettings;
+    public string MapGen;
     public string BulletsInStore;
     public string CountOfAll;
     public string StartHealthOfPers;
@@ -92,12 +93,16 @@ public class Store : MonoBehaviour
     private int CountOfBullets = 10;
     private int CountOfOtherStuff = 10;
 
+    private int Columns = 10;
+    private int Rows = 10;
+
     private int CountSelectedBullets;
 
     private string PersSetPath;
     private string PlayerSourcePath;
     private string WeaponBundlePath;
     private string InvSetPath;
+    private string MapGenPath;
     private string BulletsInStorePath;
     private string CountOfAllPath;
     private string StartHealthOfPersPath;
@@ -151,6 +156,7 @@ public class Store : MonoBehaviour
         PlayerSourcePath = Application.persistentDataPath.ToString() + "/" + PlayerSource + ".txt";
         CountOfAllPath = Application.persistentDataPath + "/" + CountOfAll + ".txt";
         InvSetPath = Application.persistentDataPath + "/" + InventorySettings + ".txt";
+        MapGenPath = Application.persistentDataPath + "/" + MapGen + ".txt";
         StartHealthOfPersPath = Application.persistentDataPath + "/" + StartHealthOfPers + ".txt";
 
         CountOfBoughtPers = int.Parse(File.ReadAllLines(CountOfAllPath)[0]);
@@ -311,6 +317,9 @@ public class Store : MonoBehaviour
             S.transform.localPosition = new Vector3(0.5f * i, -0.1f, -1);
 
             S.GetComponent<OtherStuff>().Skin = int.Parse(File.ReadAllLines(OtherStuffPath)[i * 2 - 1]);
+            if (S.GetComponent<OtherStuff>().Skin == 2) {
+                S.GetComponent<OtherStuff>().WaterLiters = 100;
+            }
 
             GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
             L.name = "Lighter";
@@ -348,7 +357,7 @@ public class Store : MonoBehaviour
             W.transform.localPosition = GameObject.Find(WpnBoughtPanel.name + "/PosWpn" + Ww.ToString()).transform.localPosition;
             W.GetComponent<WeaponProperties>().Damage = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + Ww * NumWpnParam - NumWpnParam + 1]);
             W.GetComponent<WeaponProperties>().Condition = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + Ww * NumWpnParam - NumWpnParam + 2]);
-            W.GetComponent<WeaponProperties>().CountOfBullets = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + Ww * NumWpnParam - NumWpnParam + 3]);
+            W.GetComponent<WeaponProperties>().Clip = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + Ww * NumWpnParam - NumWpnParam + 3]);
             W.GetComponent<WeaponProperties>().Price = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + Ww * NumWpnParam - NumWpnParam + 4]);
             W.GetComponent<WeaponProperties>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + Ww * NumWpnParam - NumWpnParam + 5]);
             Destroy(GameObject.Find(WpnBoughtPanel.name + "/PosWpn" + Ww.ToString()));
@@ -371,6 +380,8 @@ public class Store : MonoBehaviour
 
         //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| Import Bought Stuff ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
+        int WaterContainer = 0;
+
         for (int Bo = 1; Bo < CountOfBoughtStuff + 1; Bo++) {
             GameObject O = Instantiate(Resources.Load("OtherStuffPrefab")) as GameObject;
             O.name = "BoughtStuff" + Bo.ToString();
@@ -379,6 +390,9 @@ public class Store : MonoBehaviour
             O.layer = 17;
             O.transform.localPosition = GameObject.Find(BoughtOtherPanel.name + "/PosOther" + Bo.ToString()).transform.localPosition;
             O.GetComponent<OtherStuff>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + CountOfBoughtWeapon * NumWpnParam + CountOfBoughtBullets * 3 + Bo * 2 - 1]);
+            if (O.GetComponent<OtherStuff>().Skin == 2) {
+                O.GetComponent<OtherStuff>().WaterLiters = int.Parse(File.ReadAllLines(MapGenPath)[2 * Columns * Rows + 12 + 10 + 6 + Bo]);
+            }
             Destroy(GameObject.Find(BoughtOtherPanel.name + "/PosOther" + Bo.ToString()));
         }
 
@@ -687,30 +701,12 @@ public class Store : MonoBehaviour
 
     void GoToInventory() {
 
-        //for (int i = 1; i < 10; i++)
-        //{
-        //    if (GameObject.Find("Lighter") != null)
-        //    {
-        //        GameObject.Find("Lighter").active = false;
-        //    }
-        //}
-        //if (GameObject.Find(SelectedInPanel).GetComponent<WeaponProperties>() != null)
-        //{
-        //    GameObject.Find(SelectedInPanel).GetComponent<WeaponProperties>().IsActive = false;
-        //}
-        //else
-        //{
-        //    GameObject.Find(SelectedInPanel).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-        //}
-
         Inventory.GetComponent<AudioSource>().Play();
         Inventory.interactable = false;
         Weapon.interactable = true;
         Slaves.interactable = true;
 
-
         Buy.transform.gameObject.active = false;
-        //Money.transform.localPosition = new Vector3(15, 0, Money.transform.localPosition.z);
 
         PersonsStorePanel.active = false;
         PersPanel.active = false;
@@ -719,10 +715,6 @@ public class Store : MonoBehaviour
         WeaponStorePanel.active = false;
         ArmorPanel.active = false;
 
-        //InventoryPanel.active = true;
-        //InventoryPersons.active = true;
-        //InventoryWeapon.active = true;
-        //InventoryProperties.active = true;
         GenerateYourInventory();
 
         SelectedInPanel = "DummySwitcherBought";
@@ -731,27 +723,12 @@ public class Store : MonoBehaviour
         PrevSelectedInv = "DummySwitcherBought";
         FrstLvlSelected = "DummySwitcherBought";
 
-        //this.GetComponent<InventoryWorking>().PrevSelected = GameObject.Find(InventoryPersons.name + "/DummySwitcherBought");
-        //this.GetComponent<InventoryWorking>().NextSelected = GameObject.Find(InventoryPersons.name + "/DummySwitcherBought");
-
-        //ShowGuide();
-        //AppointPos = false;
-        //SelectedWeapon = false;
-        //SelectedInPack = false;
-
         PanelActivated = 3;
         Debug.Log("End");
         this.GetComponent<Store>().enabled = false;
         this.GetComponent<InventoryWorking>().enabled = true;
-        //GoToMapButton.interactable = true;
-        //RepairOff();
 
     }
-
-    //void ShowGuide() {
-    //    PersPackCage.active = false;
-    //    InventoryText.text = "1.Select your slave \n2.Tap on cell \nto drag your slave \n3.Select weapon \n4.Tap on slave \nto assign it";
-    //}
 
     void SwitchToWeapon() {
 
@@ -940,17 +917,6 @@ public class Store : MonoBehaviour
 
     void Update()
     {
-
-        //if (PanelActivated == 3)
-        //{
-        //    this.GetComponent<InventoryWorking>().enabled = true;
-        //    this.GetComponent<Store>().enabled = false;
-        //}
-        //else {
-        //    this.GetComponent<InventoryWorking>().enabled = false;
-        //    this.GetComponent<Store>().enabled = true;
-        //}
-
         if (MenuPanel.active == false) {
             if (Input.touchCount > 0)
             {
@@ -1013,7 +979,7 @@ public class Store : MonoBehaviour
                                     string Name = hit.transform.gameObject.GetComponent<WeaponProperties>().Name.ToString();
                                     string Damage = hit.transform.gameObject.GetComponent<WeaponProperties>().Damage.ToString();
                                     int Condition = hit.transform.gameObject.GetComponent<WeaponProperties>().Condition;
-                                    int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().CountOfBullets;
+                                    int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().Clip;
                                     string Price = hit.transform.gameObject.GetComponent<WeaponProperties>().Price.ToString();
                                     string Con = "";
                                     string COB = "";
@@ -1098,14 +1064,14 @@ public class Store : MonoBehaviour
                                     }
                                     if (Skin == 2)
                                     {
-                                        Description = "Need for move";
+                                        Description = "Need for move" + "\nLiters: " + hit.collider.gameObject.GetComponent<OtherStuff>().WaterLiters.ToString();
                                     }
                                     if (Skin == 3)
                                     {
                                         Description = "Increases damage";
                                     }
 
-                                    WeaponOfOtherProperties.text = Name + "\n" + Description + "\nPrice: " + Price.ToString();
+                                    WeaponOfOtherProperties.text = Name + "\n" + Description + "\nPrice: " + Price.ToString() + "\nMoney: " + MoneyCount.ToString();
 
                                     GameObject.Find(OtherPanel.name + "/" + SelectedItem + "/Lighter").active = false;
                                     GameObject.Find(OtherPanel.name + "/" + hit.transform.gameObject.name + "/Lighter").active = true;
@@ -1123,7 +1089,7 @@ public class Store : MonoBehaviour
                                         string Name = hit.transform.gameObject.GetComponent<WeaponProperties>().Name.ToString();
                                         string Damage = hit.transform.gameObject.GetComponent<WeaponProperties>().Damage.ToString();
                                         int Condition = hit.transform.gameObject.GetComponent<WeaponProperties>().Condition;
-                                        int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().CountOfBullets;
+                                        int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().Clip;
                                         string Price = hit.transform.gameObject.GetComponent<WeaponProperties>().Price.ToString();
                                         string Con = "";
                                         string COB = "";
@@ -1150,15 +1116,32 @@ public class Store : MonoBehaviour
                                         SelectedInPanel = hit.collider.gameObject.name;
                                         GameObject.Find(BoughtBulletsPanel.name + "/" + SelectedInPanel).GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 1);
                                     }
+                                    if (hit.collider.gameObject.GetComponent<OtherStuff>() != null)
+                                    {
+                                        string Name = hit.transform.gameObject.GetComponent<OtherStuff>().Name.ToString();
+                                        int Skin = hit.transform.gameObject.GetComponent<OtherStuff>().Skin;
 
+                                        string Description = "";
+
+                                        if (Skin == 1)
+                                        {
+                                            Description = "Heals your slave";
+                                        }
+                                        if (Skin == 2)
+                                        {
+                                            Description = "Need for move" + "\nLiters: " + hit.collider.gameObject.GetComponent<OtherStuff>().WaterLiters.ToString();
+                                        }
+                                        if (Skin == 3)
+                                        {
+                                            Description = "Increases damage";
+                                        }
+
+                                        WeaponOfOtherProperties.text = Name + "\n" + Description;
+                                        GameObject.Find(BoughtOtherPanel.name + "/" + SelectedInPanel).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                                        SelectedInPanel = hit.collider.gameObject.name;
+                                        GameObject.Find(BoughtOtherPanel.name + "/" + SelectedInPanel).GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 1);
+                                    }
                                 }
-
-
-                            }
-
-                            if (PanelActivated == 3)
-                            {
-
                             }
                         }
                     }
@@ -1170,8 +1153,7 @@ public class Store : MonoBehaviour
             {
 
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                if (hit)
-                {
+                if (hit) {
                     if (PanelActivated == 1) {
 
                         if (hit.collider.gameObject.layer == 8) {
@@ -1217,7 +1199,7 @@ public class Store : MonoBehaviour
                             string Name = hit.transform.gameObject.GetComponent<WeaponProperties>().Name.ToString();
                             string Damage = hit.transform.gameObject.GetComponent<WeaponProperties>().Damage.ToString();
                             int Condition = hit.transform.gameObject.GetComponent<WeaponProperties>().Condition;
-                            int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().CountOfBullets;
+                            int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().Clip;
                             string Price = hit.transform.gameObject.GetComponent<WeaponProperties>().Price.ToString();
                             string Con = "";
                             string COB = "";
@@ -1294,13 +1276,13 @@ public class Store : MonoBehaviour
                                 Description = "Heals your slave";
                             }
                             if (Skin == 2) {
-                                Description = "Need for move";
+                                Description = "Need for move" + "\nLiters: " + hit.collider.gameObject.GetComponent<OtherStuff>().WaterLiters.ToString();
                             }
                             if (Skin == 3) {
                                 Description = "Increases damage";
                             }
 
-                            WeaponOfOtherProperties.text = Name + "\n" + Description + "\nPrice: " + Price.ToString();
+                            WeaponOfOtherProperties.text = Name + "\n" + Description + "\nPrice: " + Price.ToString() + "\nMoney: " + MoneyCount.ToString();
 
                             GameObject.Find(OtherPanel.name + "/" + SelectedItem + "/Lighter").active = false;
                             GameObject.Find(OtherPanel.name + "/" + hit.transform.gameObject.name + "/Lighter").active = true;
@@ -1316,7 +1298,7 @@ public class Store : MonoBehaviour
                                 string Name = hit.transform.gameObject.GetComponent<WeaponProperties>().Name.ToString();
                                 string Damage = hit.transform.gameObject.GetComponent<WeaponProperties>().Damage.ToString();
                                 int Condition = hit.transform.gameObject.GetComponent<WeaponProperties>().Condition;
-                                int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().CountOfBullets;
+                                int CountOfBullets = hit.transform.gameObject.GetComponent<WeaponProperties>().Clip;
                                 string Price = hit.transform.gameObject.GetComponent<WeaponProperties>().Price.ToString();
                                 string Con = "";
                                 string COB = "";
@@ -1354,7 +1336,7 @@ public class Store : MonoBehaviour
                                 }
                                 if (Skin == 2)
                                 {
-                                    Description = "Need for move";
+                                    Description = "Need for move" + "\nLiters: " + hit.collider.gameObject.GetComponent<OtherStuff>().WaterLiters.ToString();
                                 }
                                 if (Skin == 3)
                                 {
@@ -1370,10 +1352,6 @@ public class Store : MonoBehaviour
                         }
 
 
-                    }
-
-                    if (PanelActivated == 3) {
-                        
                     }
                 }
             }
@@ -1449,6 +1427,8 @@ public class Store : MonoBehaviour
                         YourWeapon.layer = 17;
                         Destroy(Bought);
                         Debug.Log(SelectedItem);
+
+                        WeaponOfOtherProperties.text = "Money: " + MoneyCount.ToString(); 
                     }
                     else
                     {
@@ -1494,8 +1474,8 @@ public class Store : MonoBehaviour
                             }
                             else {
 
-                                int NewMoney;
-                                NewMoney = MoneyCount - Bought.GetComponent<Bullets>().Price * CountSelectedBullets;
+                                MoneyCount = MoneyCount - Bought.GetComponent<Bullets>().Price * CountSelectedBullets;
+
                                 CountOfBoughtBullets = CountOfBoughtBullets + 1;
                                 int CSB = CountSelectedBullets * Bought.GetComponent<Bullets>().ClipOfWeapon;
 
@@ -1530,6 +1510,8 @@ public class Store : MonoBehaviour
                             }
                         }
 
+                        WeaponOfOtherProperties.text = "Money: " + MoneyCount.ToString(); 
+
                     }
                     else
                     {
@@ -1544,10 +1526,8 @@ public class Store : MonoBehaviour
                 if (Bought.gameObject.layer == 19) {
                     if (CountOfBoughtStuff < 9)
                     {
-                        int NewMoney;
-                        NewMoney = MoneyCount - Bought.GetComponent<OtherStuff>().Price;
-                        MoneyCount = NewMoney;
-                        Money.text = NewMoney.ToString();
+                        MoneyCount = MoneyCount - Bought.GetComponent<OtherStuff>().Price;
+                        //Money.text = MoneyCount.ToString();
                         CountOfBoughtStuff = CountOfBoughtStuff + 1;
                         Destroy(GameObject.Find(Bought.name + "/Lighter"));
                         Bought.GetComponent<OtherStuff>().Bought = true;
@@ -1556,6 +1536,8 @@ public class Store : MonoBehaviour
                         Destroy(GameObject.Find(BoughtOtherPanel.name + "/PosOther" + CountOfBoughtStuff.ToString()));
                         Bought.name = "BoughtStuff" + CountOfBoughtStuff.ToString();
                         Bought.layer = 17;
+
+                        WeaponOfOtherProperties.text = "Money: " + MoneyCount.ToString(); 
                     }
                     else {
                         GameObject.Find(SelectedItem + "/Lighter").active = false;
@@ -1566,55 +1548,18 @@ public class Store : MonoBehaviour
                     SelectedItem = "DummySwitcher";
                     Buy.interactable = false;
                 }
+
+                
             }
         }
     }
     
-    //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| GENERATE INVENTORY |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    ///|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    ///|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| GENERATE INVENTORY |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    ///|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     void GenerateYourInventory() {
 
-        //************************************************************************ CLEAR OF OLD STUFF **********************************************************************************
-
-        //int OldCountOfBoughtPers = int.Parse(File.ReadAllLines(CountOfAllPath)[0]);
-        //int OldCountOfBoughtWeapon = int.Parse(File.ReadAllLines(CountOfAllPath)[1]);
-        //int OldCountOfBoughtBullets = int.Parse(File.ReadAllLines(CountOfAllPath)[2]);
-        //int OldCountOfBoughtOther = int.Parse(File.ReadAllLines(CountOfAllPath)[3]);
-
-        //for (int p = 1; p < OldCountOfBoughtPers + 1; p++) {
-
-        //    Destroy(GameObject.Find(InventoryPersons.name + "/Pers" + p.ToString()));
-
-        //}
-        //for (int w = 1; w < OldCountOfBoughtWeapon + 1; w++) {
-
-        //    Destroy(GameObject.Find(InventoryWeapon.name + "/Weapon" + w.ToString()));
-
-        //}
-
-        //InventoryStuff.active = true;
-        //for (int o = 1; o < OldCountOfBoughtOther + 1; o++) {
-
-        //    Destroy(GameObject.Find(InventoryStuff.name + "/Stuff" + o.ToString()));
-
-        //}
-        //InventoryStuff.active = false;
-
-        //PersPackCage.active = true;
-        //for (int iw = 1; iw < 10; iw++) {
-
-        //    if (GameObject.Find(PersPackCage.name + "/Weapon" + iw.ToString()) != null) {
-        //        Destroy(GameObject.Find(PersPackCage.name + "/Weapon" + iw.ToString()));
-        //    }
-        //    if (GameObject.Find(PersPackCage.name + "/Stuff" + iw.ToString()) != null) {
-        //        Destroy(GameObject.Find(PersPackCage.name + "/Stuff" + iw.ToString()));
-        //    }
-
-        //}
-        //PersPackCage.active = false;
-
-        //************************************************************************ WRITE NEW INFO ABOUT BOUGHT **********************************************************************************
+        ///************************************************************************ WRITE NEW INFO ABOUT BOUGHT **********************************************************************************
 
         string[] CountAll = File.ReadAllLines(CountOfAllPath);
 
@@ -1649,7 +1594,7 @@ public class Store : MonoBehaviour
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam] = "=== Weapon " + w.ToString() + " ===";
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam + 1] = BoughtWeapon.GetComponent<WeaponProperties>().Damage.ToString();
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam + 2] = BoughtWeapon.GetComponent<WeaponProperties>().Condition.ToString();
-            GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam + 3] = BoughtWeapon.GetComponent<WeaponProperties>().CountOfBullets.ToString();
+            GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam + 3] = BoughtWeapon.GetComponent<WeaponProperties>().Clip.ToString();
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam + 4] = BoughtWeapon.GetComponent<WeaponProperties>().Price.ToString();
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + w * NumWpnParam - NumWpnParam + 5] = BoughtWeapon.GetComponent<WeaponProperties>().Skin.ToString();
         }
@@ -1663,12 +1608,22 @@ public class Store : MonoBehaviour
 
         }
 
+        int WaterContainers = 0;
+        string[] NewMapGen = File.ReadAllLines(MapGenPath);
+
         for (int o = 1; o < CountOfBoughtStuff + 1; o++)
         {
             GameObject BoughtStuff = GameObject.Find(BoughtOtherPanel.name + "/BoughtStuff" + o.ToString());
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + CountOfBoughtWeapon * NumWpnParam + CountOfBoughtBullets * 3 + o * 2 - 2] = "=== Stuff " + o.ToString() + " ===";
             GetPlayerData[2 + CountOfBoughtPers * NumPersParam + CountOfBoughtWeapon * NumWpnParam + CountOfBoughtBullets * 3 + o * 2 - 1] = BoughtStuff.GetComponent<OtherStuff>().Skin.ToString();
+            if (BoughtStuff.GetComponent<OtherStuff>().Skin == 2){
+                NewMapGen[2 * Columns * Rows + 12 + 10 + 6 + o] = BoughtStuff.GetComponent<OtherStuff>().WaterLiters.ToString();
+            } else {
+                NewMapGen[2 * Columns * Rows + 12 + 10 + 6 + o] = "Empty";
+            }
         }
+
+        File.WriteAllLines(MapGenPath, NewMapGen);
 
         BoughtPersonsPanel.active = false;
         ArmorPanel.active = false;
@@ -1698,169 +1653,6 @@ public class Store : MonoBehaviour
         InventoryPersons.active = false;
         InventoryWeapon.active = false;
         InventoryStuff.active = false;
-
-        //************************************************************************ SET NEW STUFF INTO POSITION **********************************************************************************
-
-        //string[] InvSet = File.ReadAllLines(InvSetPath);
-
-        //for (int b = 1; b < CountOfBoughtPers + 1; b++) {
-
-        //    GameObject YourBoughtPers = Instantiate(Resources.Load("HeroPrefab")) as GameObject;
-        //    YourBoughtPers.name = "Pers" + b.ToString();
-        //    YourBoughtPers.transform.SetParent(InventoryPersons.transform);
-
-        //    YourBoughtPers.GetComponent<PersProperties>().Health = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 1]);
-        //    YourBoughtPers.GetComponent<PersProperties>().Damage = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 2]);
-        //    YourBoughtPers.GetComponent<PersProperties>().Accuracy = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 3]);
-        //    YourBoughtPers.GetComponent<PersProperties>().Level = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 4]);
-        //    YourBoughtPers.GetComponent<PersProperties>().CountOfBattles = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 5]);
-        //    YourBoughtPers.GetComponent<PersProperties>().Price = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 6]);
-        //    YourBoughtPers.GetComponent<PersProperties>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + NumPersParam * b - NumPersParam + 7]);
-        //    YourBoughtPers.GetComponent<PersProperties>().NumberOfPersInInventory = b;
-        //    YourBoughtPers.GetComponent<PersProperties>().ShowHealthBar = true;
-
-        //    GameObject L = Instantiate(Resources.Load("Lighter_03")) as GameObject;
-        //    L.name = "Lighter";
-        //    L.transform.SetParent(YourBoughtPers.transform);
-        //    L.transform.localPosition = new Vector3(0, 0, -0.1f);
-
-        //    for (int i = 0; i < 4; i++) {
-        //        YourBoughtPers.GetComponent<PersProperties>().Package[i] = "None";
-        //    }
-
-
-        //    if (InvSet[10 + b] == "NaN")
-        //    {
-        //        for (int p = 1; p < 10; p++) {
-        //            GameObject NewPosItem = GameObject.Find(InventoryPersons.name + "/PosOnField" + p.ToString());
-        //            if (NewPosItem.GetComponent<WarriorSettings>().Full == false)
-        //            {
-        //                InvSet[10 + b] = p.ToString();
-        //                File.WriteAllLines(InvSetPath, InvSet);
-        //                YourBoughtPers.transform.localPosition = NewPosItem.transform.localPosition + new Vector3(0, 0, -0.1f);
-        //                YourBoughtPers.GetComponent<PersProperties>().PositionOnField = p;
-        //                NewPosItem.GetComponent<WarriorSettings>().Full = true;
-
-        //                break;
-        //            }
-        //        }
-        //    }
-        //    else {
-
-        //        GameObject NewPosItem = GameObject.Find(InventoryPersons.name + "/PosOnField" + InvSet[10 + b].ToString());
-        //        YourBoughtPers.transform.localPosition = NewPosItem.transform.localPosition + new Vector3(0, 0, -0.1f);
-        //        NewPosItem.GetComponent<WarriorSettings>().Full = true;
-        //        YourBoughtPers.GetComponent<PersProperties>().PositionOnField = int.Parse(InvSet[10 + b]);
-        //    }
-
-        //    int CountStuff = 0;
-
-        //    if (InvSet[21 + b] != "NaN") {
-        //        int NumWeap = int.Parse(InvSet[21 + b]);
-        //        int Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + NumWeap * NumWpnParam - 1]);
-        //        YourBoughtPers.GetComponent<PersProperties>().WeaponInHands = NumWeap;
-        //        YourBoughtPers.GetComponent<PersProperties>().WeaponSkin = Skin;
-        //        YourBoughtPers.GetComponent<PersProperties>().Package[0] = "Weapon" + NumWeap.ToString();
-        //        CountStuff = CountStuff + 1;
-        //    }
-
-        //}
-
-        //int PositionOfWeaponInInv = 0;
-
-        //for (int m = 1; m < CountOfBoughtWeapon + 1; m++)
-        //{
-        //    //string[] InvSet = File.ReadAllLines(InvSetPath);
-        //    GameObject YourBoughtWeapon = Instantiate(Resources.Load("WeaponDoll")) as GameObject;
-        //    PersPackCage.active = true;
-        //    if (InvSet[37 + m] == "false")
-        //    {
-        //        YourBoughtWeapon.name = "Weapon" + m.ToString();
-        //        PositionOfWeaponInInv = PositionOfWeaponInInv + 1;
-        //        YourBoughtWeapon.transform.SetParent(InventoryWeapon.transform);
-        //        YourBoughtWeapon.transform.localPosition = GameObject.Find(InventoryWeapon.name + "/InvWpn" + PositionOfWeaponInInv.ToString()).transform.localPosition + new Vector3(0, 0, -0.1f);
-        //        GameObject.Find(InventoryWeapon.name + "/InvWpn" + PositionOfWeaponInInv.ToString()).GetComponent<WarriorSettings>().Full = true;
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Damage = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 1]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Condition = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 2]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().CountOfBullets = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 3]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Price = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 4]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 5]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().NumberOfWeaponInInventory = m;
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().PositionOnField = PositionOfWeaponInInv;
-        //        GameObject L = Instantiate(Resources.Load("Lighter_03")) as GameObject;
-        //        L.name = "Lighter";
-        //        L.transform.SetParent(YourBoughtWeapon.transform);
-        //        L.transform.localPosition = new Vector3(0, 0, -0.1f);
-        //    }
-        //    else {
-        //        YourBoughtWeapon.name = "Weapon" + m.ToString();
-        //        YourBoughtWeapon.transform.SetParent(PersPackCage.transform);
-        //        YourBoughtWeapon.transform.localPosition = GameObject.Find("PersPack1").transform.localPosition;
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Damage = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 1]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Condition = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 2]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().CountOfBullets = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 3]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Price = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 4]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Skin = int.Parse(File.ReadAllLines(PlayerSourcePath)[2 + CountOfBoughtPers * NumPersParam + m * NumWpnParam - NumWpnParam + 5]);
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().NumberOfWeaponInInventory = m;
-        //        YourBoughtWeapon.GetComponent<WeaponProperties>().Bought = true;
-        //        YourBoughtWeapon.GetComponent<SpriteRenderer>().enabled = false;
-        //        YourBoughtWeapon.GetComponent<Collider2D>().enabled = false;
-        //        YourBoughtWeapon.layer = 18;
-        //    }
-        //    PersPackCage.active = false;
-
-        //}
-
-        //PositionOfWeaponInInv = 0;
-
-        //string[] PlaySrc = File.ReadAllLines(PlayerSourcePath);
-
-        //for (int s = 1; s < CountOfBoughtStuff + 1; s++) {
-        //    //string[] InvSet = File.ReadAllLines(InvSetPath);
-        //    GameObject YourBoughtStuff = Instantiate(Resources.Load("OtherStuffPrefab")) as GameObject;
-        //    YourBoughtStuff.name = "Stuff" + s.ToString();
-
-        //    if (InvSet[48 + s] == "undefined")
-        //    {
-        //        PositionOfWeaponInInv = PositionOfWeaponInInv + 1;
-        //        InventoryStuff.active = true;
-        //        YourBoughtStuff.transform.SetParent(InventoryStuff.transform);
-        //        YourBoughtStuff.transform.localPosition = GameObject.Find(InventoryStuff.name + "/InvStuff" + PositionOfWeaponInInv.ToString()).transform.localPosition + new Vector3(0, 0, -0.1f);
-        //        GameObject.Find(InventoryStuff.name + "/InvStuff" + PositionOfWeaponInInv.ToString()).GetComponent<WarriorSettings>().Full = true;
-        //        YourBoughtStuff.GetComponent<OtherStuff>().Skin = int.Parse(PlaySrc[2 + CountOfBoughtPers * NumPersParam + CountOfBoughtWeapon * NumWpnParam + CountOfBoughtBullets * 3 + s * 2 - 1]);
-        //        YourBoughtStuff.GetComponent<OtherStuff>().NumberOfStuffInInv = s;
-        //        YourBoughtStuff.GetComponent<OtherStuff>().PositionOnField = PositionOfWeaponInInv;
-        //        GameObject L = Instantiate(Resources.Load("Lighter_03")) as GameObject;
-        //        L.name = "Lighter";
-        //        L.transform.SetParent(YourBoughtStuff.transform);
-        //        L.transform.localPosition = new Vector3(0, 0, -0.1f);
-        //        InventoryStuff.active = false;
-        //    }
-        //    else{
-        //        int NumberOfPers = int.Parse(InvSet[48 + s]);
-        //        //YourBoughtStuff.GetComponent<OtherStuff>().WhichPersUseIt = NumberOfPers;
-        //        YourBoughtStuff.GetComponent<OtherStuff>().NumberOfStuffInInv = s;
-        //        PersPackCage.active = true;
-        //        YourBoughtStuff.transform.SetParent(PersPackCage.transform);
-
-        //        GameObject Pers = GameObject.Find(InventoryPersons.name + "/Pers" + NumberOfPers);
-
-        //        for (int i = 0; i < 4; i++) {
-        //            if (Pers.GetComponent<PersProperties>().Package[i] == "None") {
-        //                Pers.GetComponent<PersProperties>().Package[i] = YourBoughtStuff.name;
-        //                YourBoughtStuff.transform.localPosition = GameObject.Find(PersPackCage.name + "/PersPack" + (i + 1).ToString()).transform.localPosition;
-        //                break;
-        //            }
-        //        }
-
-        //        YourBoughtStuff.GetComponent<OtherStuff>().Skin = int.Parse(PlaySrc[2 + CountOfBoughtPers * NumPersParam + CountOfBoughtWeapon * NumWpnParam + CountOfBoughtBullets * 3 + s * 2 - 1]);
-        //        YourBoughtStuff.GetComponent<OtherStuff>().Bought = true;
-        //        YourBoughtStuff.layer = 18;
-        //        YourBoughtStuff.GetComponent<SpriteRenderer>().enabled = false;
-        //        YourBoughtStuff.GetComponent<Collider2D>().enabled = false;
-        //        PersPackCage.active = false;
-        //    }
-        //}
 
     }
 }

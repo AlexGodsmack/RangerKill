@@ -164,6 +164,11 @@ public class MainMenu : MonoBehaviour
         WriteMap.WriteLine(0);
         WriteMap.WriteLine(0);
 
+        WriteMap.WriteLine("=== Barrels of Water ===");
+        for (int w = 1; w < 11; w++) {
+            WriteMap.WriteLine("Empty");
+        }
+
         WriteMap.Close();
 
     }

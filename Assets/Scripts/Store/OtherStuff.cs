@@ -20,6 +20,7 @@ public class OtherStuff : MonoBehaviour
     public Sprite SkinBought3;
 
     public int Price;
+    public int WaterLiters;
 
     public string Name;
     public string Description;

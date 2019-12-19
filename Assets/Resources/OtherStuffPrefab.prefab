@@ -59,6 +59,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -108,6 +109,7 @@ MonoBehaviour:
   SkinBought3: {fileID: 7114947542566164079, guid: 4bf59c290e892864aabfaeb2ce150a47,
     type: 3}
   Price: 0
+  WaterLiters: 0
   Name: 
   Description: 
   NumberOfStuffInInv: 0
@@ -139,7 +141,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 0.24, y: 0.24}
   m_EdgeRadius: 0
 --- !u!82 &4514221018646072758
 AudioSource:
