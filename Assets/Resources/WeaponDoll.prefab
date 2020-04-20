@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6778840769981559195}
   - component: {fileID: 7306092248089338465}
-  - component: {fileID: 8354395073229460098}
   - component: {fileID: -3259840037167222258}
   - component: {fileID: -3693023289686942725}
   - component: {fileID: 603474648}
+  - component: {fileID: 1777279739}
   m_Layer: 9
   m_Name: WeaponDoll
   m_TagString: Untagged
@@ -85,62 +85,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8354395073229460098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1795193045688493464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5629edf95448ae04eaf5e52edd42a270, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Damage: 0
-  Condition: 0
-  Clip: 0
-  CountOfBullets: 0
-  Price: 0
-  Skin: 0
-  Bought: 0
-  Additive: {fileID: 2100000, guid: 22dff628588ea1046800487644b9556c, type: 2}
-  Default: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  Name: 
-  NumberOfWeaponInInventory: 0
-  PositionOnField: 0
-  InHands: 0
-  IsActive: 0
-  Skin1: {fileID: 5601323976189978565, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin2: {fileID: -761887118410055393, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin3: {fileID: 9147546874185701050, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin4: {fileID: -8951780388439148649, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin5: {fileID: -5082318553336741150, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin6: {fileID: -3087264978319007404, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin7: {fileID: -21522807587195298, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin8: {fileID: -3776783329477156521, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin9: {fileID: 7834802711767081893, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  Skin10: {fileID: 7569684938147083892, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
-  BoughtSkin1: {fileID: 4978815137168523904, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin2: {fileID: 5403175223880072402, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin3: {fileID: -477127970337342324, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin4: {fileID: 8477449724022896265, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin5: {fileID: -5011090852280901214, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin6: {fileID: 3836413455072006435, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin7: {fileID: 5695889718491886734, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin8: {fileID: -9090913232151637741, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin9: {fileID: 5944641835610202357, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
-  BoughtSkin10: {fileID: -5108751271086044744, guid: b97a9e1546182a14881400b71fa1bdd0,
-    type: 3}
 --- !u!61 &-3259840037167222258
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -282,3 +226,51 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1777279739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1795193045688493464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12c09104f68de9c498943ab93e9121b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WeapName: 
+  Number: 0
+  Damage: 0
+  Condition: 0
+  Skin: 0
+  Bullets: 0
+  Efficiency: 0
+  Price: 0
+  isActive: 0
+  Bought: 0
+  NumSkin:
+  - {fileID: 5601323976189978565, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: -761887118410055393, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: 9147546874185701050, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: -8951780388439148649, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: -5082318553336741150, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: -3087264978319007404, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: -21522807587195298, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: -3776783329477156521, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: 7834802711767081893, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  - {fileID: 7569684938147083892, guid: 94d57edac2166f04a8d8d434a500cf91, type: 3}
+  BoughtSkin:
+  - {fileID: 4978815137168523904, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: 5403175223880072402, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: -477127970337342324, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: 8477449724022896265, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: -5011090852280901214, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: 3836413455072006435, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: 5695889718491886734, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: -9090913232151637741, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: 5944641835610202357, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  - {fileID: -5108751271086044744, guid: b97a9e1546182a14881400b71fa1bdd0, type: 3}
+  Default: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  Additive: {fileID: 2100000, guid: 22dff628588ea1046800487644b9556c, type: 2}
+  Data: {fileID: 4900000, guid: 8c0942f210ee3be49aaca9cbd649ab3c, type: 3}
+  WeaponXRef: {fileID: 0}

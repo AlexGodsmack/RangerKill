@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3763643332410067706}
   - component: {fileID: 3763643332410067707}
-  - component: {fileID: 3763643332410067704}
   - component: {fileID: 6294774204125773623}
   - component: {fileID: 2042421944749664507}
-  m_Layer: 11
+  - component: {fileID: 3284863624718971529}
+  m_Layer: 10
   m_Name: BulletsDoll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,56 +83,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3763643332410067704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3763643332410067705}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54dfb5209074aab449ce94f3318ca763, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BulletsSkin: 0
-  CountOfBullets: 0
-  Price: 0
-  ClipOfWeapon: 0
-  Name: 
-  Bought: 0
-  Default: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  Additive: {fileID: 2100000, guid: 22dff628588ea1046800487644b9556c, type: 2}
-  skin1: {fileID: 874343242196921964, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin2: {fileID: -7976837497307082302, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin3: {fileID: -7803065417098437583, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin4: {fileID: 7431529995326980795, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin5: {fileID: -7779215486825634471, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin6: {fileID: 830317617348258784, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin7: {fileID: 6112890488319390909, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin8: {fileID: 1757937406519661826, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin9: {fileID: -2121471355247410076, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  skin10: {fileID: 3619374306951625730, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
-  Boughtskin1: {fileID: 5533141610429683973, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin2: {fileID: -5166309219996132955, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin3: {fileID: 2233385943087543694, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin4: {fileID: -3653064779530442784, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin5: {fileID: -1241702937467673240, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin6: {fileID: 7736172719293796117, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin7: {fileID: 5969064360161595490, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin8: {fileID: 4710047105405264990, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin9: {fileID: -2873485995882446914, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
-  Boughtskin10: {fileID: -4747216957846226498, guid: 78b08efe5af6d8948a468dacb7535bed,
-    type: 3}
 --- !u!61 &6294774204125773623
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -255,3 +205,45 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3284863624718971529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3763643332410067705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82f09fec5bbceff4c8c4df187724ed28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Skin: 0
+  Name: 
+  Count: 0
+  NumSkin:
+  - {fileID: 874343242196921964, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: -7976837497307082302, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: -7803065417098437583, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: 7431529995326980795, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: -7779215486825634471, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: 830317617348258784, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: 6112890488319390909, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: 1757937406519661826, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: -2121471355247410076, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  - {fileID: 3619374306951625730, guid: bb996a2b1353d964b9a6363ee3748f76, type: 3}
+  NumBoughtSkin:
+  - {fileID: 5533141610429683973, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: -5166309219996132955, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: 2233385943087543694, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: -3653064779530442784, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: -1241702937467673240, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: 7736172719293796117, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: 5969064360161595490, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: 4710047105405264990, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: -2873485995882446914, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  - {fileID: -4747216957846226498, guid: 78b08efe5af6d8948a468dacb7535bed, type: 3}
+  Bought: 0
+  isActive: 0
+  Default: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  Additive: {fileID: 2100000, guid: 22dff628588ea1046800487644b9556c, type: 2}
+  Data: {fileID: 4900000, guid: 8c0942f210ee3be49aaca9cbd649ab3c, type: 3}

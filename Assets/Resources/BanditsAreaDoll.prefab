@@ -10,12 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 811235581089292863}
   - component: {fileID: 811235581089292860}
-  - component: {fileID: 5400541092030190304}
   - component: {fileID: 7147615738584721552}
   - component: {fileID: 797467978262360973}
   - component: {fileID: 9134711868696277459}
   - component: {fileID: -2650958171282035946}
-  m_Layer: 14
+  - component: {fileID: 1608515355}
+  m_Layer: 15
   m_Name: BanditsAreaDoll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,6 +61,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -85,41 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5400541092030190304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 811235581089292862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c751964440d91a4f8417f8328998227, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NumberOfBand: 0
-  SizeOfArea: 0
-  SmallSkin1: {fileID: -4679825671483334100, guid: fd70d6c16be65334193b4683d248e1fb,
-    type: 3}
-  SmallSkin2: {fileID: -7235234788573307083, guid: fd70d6c16be65334193b4683d248e1fb,
-    type: 3}
-  SmallSkin3: {fileID: 5330289590730784201, guid: fd70d6c16be65334193b4683d248e1fb,
-    type: 3}
-  MediumSkin1: {fileID: 2230707761297363051, guid: 878e05dfecb4f5b41a2169bc686cb39c,
-    type: 3}
-  MediumSkin2: {fileID: 1352651531528660162, guid: 878e05dfecb4f5b41a2169bc686cb39c,
-    type: 3}
-  MediumSkin3: {fileID: 482292827437980689, guid: 878e05dfecb4f5b41a2169bc686cb39c,
-    type: 3}
-  BigSkin1: {fileID: 8505719730736174453, guid: f3d8a788dba3a5c43ae424cc5831ed21,
-    type: 3}
-  BigSkin2: {fileID: 2307664836302026719, guid: f3d8a788dba3a5c43ae424cc5831ed21,
-    type: 3}
-  BigSkin3: {fileID: -4090035797518343186, guid: f3d8a788dba3a5c43ae424cc5831ed21,
-    type: 3}
-  ColliderSmall: {fileID: 7147615738584721552}
-  ColliderMedium: {fileID: 797467978262360973}
-  ColliderBig: {fileID: 9134711868696277459}
 --- !u!60 &7147615738584721552
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -178,14 +144,18 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.3186761, y: 0.9880136}
-      - {x: -0.96614623, y: 0.4836591}
-      - {x: -0.9722927, y: -0.42168903}
-      - {x: -0.420557, y: -0.9641703}
-      - {x: 0.36301994, y: -0.9681222}
-      - {x: 0.9666375, y: -0.39483938}
-      - {x: 0.9594605, y: 0.4333359}
-      - {x: 0.37520355, y: 0.9843665}
+    - - {x: -0.23841712, y: 0.8972862}
+      - {x: -0.65717965, y: 0.6512619}
+      - {x: -0.8928665, y: 0.21496609}
+      - {x: -0.89203376, y: -0.22278647}
+      - {x: -0.6607231, y: -0.67474014}
+      - {x: -0.21816494, y: -0.9013589}
+      - {x: 0.23739713, y: -0.9018212}
+      - {x: 0.6501417, y: -0.65557367}
+      - {x: 0.8919608, y: -0.29713288}
+      - {x: 0.8968813, y: 0.20453821}
+      - {x: 0.692536, y: 0.6381394}
+      - {x: 0.2879656, y: 0.8831705}
 --- !u!60 &9134711868696277459
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -211,14 +181,18 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.5610939, y: 1.4482992}
-      - {x: -1.4721196, y: 0.7403592}
-      - {x: -1.490255, y: -0.5871114}
-      - {x: -0.56274736, y: -1.493433}
-      - {x: 0.54109436, y: -1.502071}
-      - {x: 1.5431641, y: -0.5485382}
-      - {x: 1.5431641, y: 0.47749376}
-      - {x: 0.5769862, y: 1.4436494}
+    - - {x: -0.3476473, y: 1.4482992}
+      - {x: -1.097276, y: 1.0492078}
+      - {x: -1.4442787, y: 0.39234808}
+      - {x: -1.4484938, y: -0.40150556}
+      - {x: -1.0113115, y: -1.1231387}
+      - {x: -0.35394105, y: -1.460952}
+      - {x: 0.42509076, y: -1.4603097}
+      - {x: 1.071463, y: -1.0649215}
+      - {x: 1.4642817, y: -0.35829222}
+      - {x: 1.4596413, y: 0.38005066}
+      - {x: 1.0890139, y: 1.0730479}
+      - {x: 0.3635394, y: 1.4436494}
 --- !u!50 &-2650958171282035946
 Rigidbody2D:
   serializedVersion: 4
@@ -240,3 +214,34 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1608515355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811235581089292862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5343df8e2bb11ec4f96987c2275206c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clan: 
+  Coverage: 0
+  Population: 0
+  Colliders:
+  - {fileID: 7147615738584721552}
+  - {fileID: 797467978262360973}
+  - {fileID: 9134711868696277459}
+  Truman:
+  - {fileID: -4679825671483334100, guid: fd70d6c16be65334193b4683d248e1fb, type: 3}
+  - {fileID: 2230707761297363051, guid: 878e05dfecb4f5b41a2169bc686cb39c, type: 3}
+  - {fileID: 8505719730736174453, guid: f3d8a788dba3a5c43ae424cc5831ed21, type: 3}
+  Knackers:
+  - {fileID: -7235234788573307083, guid: fd70d6c16be65334193b4683d248e1fb, type: 3}
+  - {fileID: 1352651531528660162, guid: 878e05dfecb4f5b41a2169bc686cb39c, type: 3}
+  - {fileID: 2307664836302026719, guid: f3d8a788dba3a5c43ae424cc5831ed21, type: 3}
+  Horde:
+  - {fileID: 5330289590730784201, guid: fd70d6c16be65334193b4683d248e1fb, type: 3}
+  - {fileID: 482292827437980689, guid: 878e05dfecb4f5b41a2169bc686cb39c, type: 3}
+  - {fileID: -4090035797518343186, guid: f3d8a788dba3a5c43ae424cc5831ed21, type: 3}

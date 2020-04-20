@@ -1,107 +1,123 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using System.IO;
 
 public class OtherStuff : MonoBehaviour
 {
 
     public int Skin;
-    public Material Additive;
-    public Material Default;
-
-    public Sprite Skin1;
-    public Sprite Skin2;
-    public Sprite Skin3;
-
-    public Sprite SkinBought1;
-    public Sprite SkinBought2;
-    public Sprite SkinBought3;
-
-    public int Price;
-    public int WaterLiters;
-
-    public string Name;
     public string Description;
+    public string ShortDescription;
+    public int Number;
 
-    public int NumberOfStuffInInv;
-    public int PositionOnField;
-    public int WhichPersUseIt;
+    public bool isActive;
+    public bool Bought;
+    public int Price;
 
-    public bool Bought = false;
+    public int Liters;
+    public bool IfNewWater;
 
-    public bool IsActive;
+    public Sprite[] SkinNum;
+    public Sprite[] SkinBoughtNum;
+
+    public Material Default;
+    public Material Additive;
+
+    public GameObject StuffXRef;
 
     void Start()
     {
+        if (Bought == true) {
+            this.GetComponent<SpriteRenderer>().sprite = SkinBoughtNum[Skin - 1];
+        } else {
+            this.GetComponent<SpriteRenderer>().sprite = SkinNum[Skin - 1];
+        }
 
         if (Skin == 1) {
-            this.GetComponent<SpriteRenderer>().sprite = Skin1;
-            Price = 250;
-            Name = "Medicine";
-            Description = "Medicine" + "\n\nHeals your slaves" + "\n\nUp health to 100%";
+            Description = "Medicine chest. \n\nHeals your slaves \nup to 100% of health";
+            ShortDescription = "Medicine\nchest.\n\nHeals your\nslaves\nup to 100%\nof health";
+            Price = 200;
         }
-
         if (Skin == 2) {
-            this.GetComponent<SpriteRenderer>().sprite = Skin2;
+            if (IfNewWater == true) {
+                Liters = 100;
+            }
+            Description = "Water. \n\nNeed for move on map \nLiters: " + Liters.ToString();
+            ShortDescription = "Water.\n\nNeed for\nmove on map\nLiters: " + Liters.ToString();
             Price = 100;
-            Name = "Water";
-            Description = "Water" + "\n\nNeed for move" + "\n\nGives 100 Steps";
         }
-
         if (Skin == 3) {
-            this.GetComponent<SpriteRenderer>().sprite = Skin3;
-            Price = 300;
-            Name = "Buff";
-            Description = "Buff" + "\n\nIncreases Damage" + "\n\nUp damage of your slave on x3 at current turn";
+            Description = "Buff. \n\nIncreases power of shot \nto 300% due one pass";
+            ShortDescription = "Buff.\n\nIncreases\npower\nof shot\nto 300% due\none pass";
+            Price = 150;
+        }
+        if (Skin == 4) {
+            Description = "Money";
+            ShortDescription = "Money";
         }
 
+    }
+    void OnEnable() {
+        if (Skin == 1) {
+            Description = "Medicine chest. \n\nHeals your slaves \nup to 100% of health";
+            ShortDescription = "Medicine\nchest.\n\nHeals your\nslaves\nup to 100%\nof health";
+            Price = 200;
+        }
+        if (Skin == 2) {
+            if (IfNewWater == true) {
+                Liters = 100;
+            }
+            Description = "Water. \n\nNeed for move on map \nLiters: " + Liters.ToString();
+            ShortDescription = "Water.\n\nNeed for\nmove on map\nLiters: " + Liters.ToString();
+            Price = 100;
+        }
+        if (Skin == 3) {
+            Description = "Buff. \n\nIncreases power of shot \nto 300% due one pass";
+            ShortDescription = "Buff.\n\nIncreases\npower\nof shot\nto 300% due\none pass";
+            Price = 150;
+        }
+        if (Skin == 4) {
+            Description = "Money";
+            ShortDescription = "Money";
+        }
     }
 
     void Update()
     {
 
-        if (Bought == true)
-        {
-            if (Skin == 1)
-            {
-                this.GetComponent<SpriteRenderer>().sprite = SkinBought1;
-            }
-            if (Skin == 2)
-            {
-                this.GetComponent<SpriteRenderer>().sprite = SkinBought2;
-            }
-            if (Skin == 3)
-            {
-                this.GetComponent<SpriteRenderer>().sprite = SkinBought3;
-            }
+        if (Bought == true) {
             this.GetComponent<SpriteRenderer>().material = Additive;
-        }
-        else {
-            if (Skin == 1)
-            {
-                this.GetComponent<SpriteRenderer>().sprite = Skin1;
-            }
-            if (Skin == 2)
-            {
-                this.GetComponent<SpriteRenderer>().sprite = Skin2;
-            }
-            if (Skin == 3)
-            {
-                this.GetComponent<SpriteRenderer>().sprite = Skin3;
-            }
+            this.GetComponent<SpriteRenderer>().sprite = SkinBoughtNum[Skin - 1];
+        } else {
             this.GetComponent<SpriteRenderer>().material = Default;
+            this.GetComponent<SpriteRenderer>().sprite = SkinNum[Skin - 1];
         }
 
-        if (IsActive == true)
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 1);
+        if (isActive == true) {
+            if (Bought == true) {
+                if (this.transform.Find("Lighter") != null) {
+                    this.transform.Find("Lighter").gameObject.active = false;
+                }
+                this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+            } else {
+                if (this.transform.Find("Lighter") != null) {
+                    this.transform.Find("Lighter").gameObject.active = true;
+                }
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+            }
+        } else {
+            if (Bought == true) {
+                if (this.transform.Find("Lighter") != null) {
+                    this.transform.Find("Lighter").gameObject.active = false;
+                }
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+            } else {
+                if (this.transform.Find("Lighter") != null) {
+                    this.transform.Find("Lighter").gameObject.active = false;
+                }
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+            }
         }
-        else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-        }
-
+        
     }
 }

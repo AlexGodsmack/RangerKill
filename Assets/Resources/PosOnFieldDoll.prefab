@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5908274610473498869}
   - component: {fileID: 5908274610473498868}
   - component: {fileID: 5908274610473498870}
-  - component: {fileID: 5908274610473498871}
   - component: {fileID: 5908274610473498825}
   m_Layer: 10
   m_Name: PosOnFieldDoll
@@ -60,6 +59,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -206,22 +206,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &5908274610473498871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5908274610473498867}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ee0e37150325974b9ddc36dab5b73d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NumberOfPos: 0
-  NumberOfPers: 0
-  NumberOFWeapon: 0
-  Full: 0
 --- !u!95 &5908274610473498825
 Animator:
   serializedVersion: 3
