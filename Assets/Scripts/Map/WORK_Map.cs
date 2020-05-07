@@ -211,15 +211,20 @@ public class WORK_Map : MonoBehaviour
             int GetMapTileNum = 0;
             foreach (MapTileSample TileMap in GetMap.Tiles) {
                 GameObject Tile = Instantiate(Resources.Load("TileMapDoll")) as GameObject;
+                Tile.GetComponent<MapTile>().TileID = GetMap.Tiles[GetMapTileNum].TileID;
                 Tile.GetComponent<MapTile>().Skin = GetMap.Tiles[GetMapTileNum].Skin;
                 for (int s = 0; s < GetMap.Tiles[GetMapTileNum].Smokes.Length; s++) {
                     if (GetMap.Tiles[GetMapTileNum].Smokes[s] == false) {
                         Tile.GetComponent<MapTile>().SmokeOfWar[s].gameObject.active = false;
                     }
                 }
-                Tile.name = "Tile_" + GetMapTileNum;
+
+                Tile.name = "Tile_" + Tile.GetComponent<MapTile>().TileID;
                 Tile.transform.SetParent(MapContainer.transform);
                 Tile.transform.localPosition = GetMap.Tiles[GetMapTileNum].Coordinates;
+                //if (TileMap.Empty == false) {
+                //    Tile.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                //}
                 GetMapTileNum += 1;
             }
 
@@ -228,7 +233,7 @@ public class WORK_Map : MonoBehaviour
             foreach (BanditArea Band in GetMap.GenerateIndexes.Bandits) {
                 GameObject newBand = Instantiate(Resources.Load("BanditsAreaDoll")) as GameObject;
                 newBand.transform.SetParent(MapContainer.transform);
-                newBand.transform.localPosition = MapContainer.transform.GetChild(GetMap.GenerateIndexes.Bandits[GetBanditNum].Coordinates).transform.localPosition + new Vector3(0, 0, -0.1f);
+                newBand.transform.localPosition = MapContainer.transform.GetChild(GetMap.GenerateIndexes.Bandits[GetBanditNum].Coordinates - 1).transform.localPosition + new Vector3(0, 0, -0.1f);
                 newBand.GetComponent<BanditsDoll>().Clan = GetMap.GenerateIndexes.Bandits[GetBanditNum].Clan;
                 newBand.GetComponent<BanditsDoll>().Coverage = GetMap.GenerateIndexes.Bandits[GetBanditNum].Coverage;
                 newBand.GetComponent<BanditsDoll>().Population = GetMap.GenerateIndexes.Bandits[GetBanditNum].Population;
@@ -240,7 +245,10 @@ public class WORK_Map : MonoBehaviour
             foreach (Store store in GetMap.GenerateIndexes.Stores) {
                 GameObject newStore = Instantiate(Resources.Load("StoresDoll")) as GameObject;
                 newStore.transform.SetParent(MapContainer.transform);
-                newStore.transform.localPosition = GetMap.GenerateIndexes.Stores[GetStoreNum].Coordinates + new Vector3(0, 0, -0.1f);
+                newStore.GetComponent<StoreChip>().TypeOfStore = GetMap.GenerateIndexes.Stores[GetStoreNum].Type;
+                newStore.GetComponent<StoreChip>().StoreID = GetMap.GenerateIndexes.Stores[GetStoreNum].StoreID;
+                Vector3 GetCoords = GetMap.Tiles[GetMap.GenerateIndexes.Stores[GetStoreNum].TileID - 1].Coordinates;
+                newStore.transform.localPosition = GetCoords + new Vector3(0, 0, -0.1f);
                 GetStoreNum += 1;
             }
 
@@ -316,6 +324,13 @@ public class WORK_Map : MonoBehaviour
                             GetPlayerData.AllStuff[s].Liters = GetWater.GetComponent<OtherStuff>().Liters;
                         }
                     }
+                }
+            }
+
+            if (Player.GetComponent<PlayerChip>().TouchObject != null) {
+                if (Player.GetComponent<PlayerChip>().TouchObject.gameObject.layer == 16) {
+                    GameObject Store = Player.GetComponent<PlayerChip>().TouchObject.gameObject;
+                    GetPlayerData.PlayerSource.CurrentStore = Store.GetComponent<StoreChip>().StoreID;
                 }
             }
 

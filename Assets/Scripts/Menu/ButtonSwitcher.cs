@@ -12,6 +12,10 @@ public class ButtonSwitcher : MonoBehaviour
     public int Number;
     public bool isPressed;
 
+    public GameObject[] SwitchingObjects_1;
+    public GameObject[] SwitchingObjects_2;
+    //public GameObject[] SwitchingObjects_3;
+
     void Start()
     {
 
@@ -35,6 +39,13 @@ public class ButtonSwitcher : MonoBehaviour
                         if (hit.collider.gameObject == Buttons[i]) {
                             Buttons[i].GetComponent<SpriteRenderer>().enabled = false;
                             Buttons[i].GetComponent<Collider2D>().enabled = false;
+                            if (SwitchingObjects_1[i] != null) {
+                                SwitchingObjects_1[i].active = true;
+                            }
+                            if (SwitchingObjects_2[i] != null) {
+                                SwitchingObjects_2[i].active = true;
+                            }
+                            //SwitchingObjects_3[i].active = true;
                             for (int a = 0; a < PlaySound.Length; a++) {
                                 PlaySound[a].Play();
                             }
@@ -42,6 +53,13 @@ public class ButtonSwitcher : MonoBehaviour
                         } else {
                             Buttons[i].GetComponent<SpriteRenderer>().enabled = true;
                             Buttons[i].GetComponent<Collider2D>().enabled = true;
+                            if (SwitchingObjects_1[i] != null) {
+                                SwitchingObjects_1[i].active = false;
+                            }
+                            if (SwitchingObjects_2[i] != null) {
+                                SwitchingObjects_2[i].active = false;
+                            }
+                            //SwitchingObjects_3[i].active = false;
                         }
                     }
                 }

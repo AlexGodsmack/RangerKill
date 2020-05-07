@@ -26,20 +26,21 @@ public class WeaponProperties : MonoBehaviour
     public Material Default;
     public Material Additive;
 
-    public TextAsset Data;
+    //public TextAsset Data;
 
     public GameObject WeaponXRef;
+    public GameObject Lighter;
 
     void Start()
     {
 
-        string[] GetData = Data.text.Split('\n');
+        //string[] GetData = Data.text.Split('\n');
 
-        if (Skin != 0) {
-            WeapName = GetData[5 * (Skin - 1)];
-            Damage = int.Parse(GetData[5 * Skin - 4]);
-            Price = Condition * int.Parse(GetData[5 * Skin - 3]);
-        }
+        //if (Skin != 0) {
+        //    WeapName = GetData[5 * (Skin - 1)];
+        //    Damage = int.Parse(GetData[5 * Skin - 4]);
+        //    Price = Condition * int.Parse(GetData[5 * Skin - 3]);
+        //}
 
     }
 
@@ -67,26 +68,16 @@ public class WeaponProperties : MonoBehaviour
 
         if (isActive == true) {
             if (Bought == false) {
-                if (this.transform.childCount != 0) {
-                    this.transform.GetChild(0).gameObject.active = true;
-                }
-                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                Lighter.GetComponent<WeaponLighter>().Activate = true;
             } else {
-                if (this.transform.childCount != 0) {
-                    this.transform.GetChild(0).gameObject.active = false;
-                }
+                Lighter.GetComponent<WeaponLighter>().Activate = false;
                 this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             }
         } else {
             if (Bought == false) {
-                if (this.transform.childCount != 0) {
-                    this.transform.GetChild(0).gameObject.active = false;
-                }
-                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                Lighter.GetComponent<WeaponLighter>().Activate = false;
             } else {
-                if (this.transform.childCount != 0) {
-                    this.transform.GetChild(0).gameObject.active = false;
-                }
+                Lighter.GetComponent<WeaponLighter>().Activate = false;
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             }
         }

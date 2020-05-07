@@ -5,6 +5,7 @@ using UnityEngine;
 public class MapTile : MonoBehaviour
 {
 
+    public int TileID;
     public int Skin;
     public Sprite[] TileNumber;
     public GameObject[] SmokeOfWar = new GameObject[4];

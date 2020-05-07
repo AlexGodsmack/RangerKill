@@ -34,7 +34,7 @@ public class PlayerChip : MonoBehaviour
             TouchObject = collision.gameObject;
         }
         if (collision.gameObject.layer == StoresLayer) {
-            Message = " Enter the store \n(click on the chip)";
+            Message = collision.gameObject.GetComponent<StoreChip>().TypeOfStore + "\nEnter the store(click on the chip)";
             this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             ReadyGoToStore = true;
             TouchObject = collision.gameObject;
@@ -52,7 +52,7 @@ public class PlayerChip : MonoBehaviour
             TouchObject = collision.gameObject;
         }
         if (collision.gameObject.layer == StoresLayer) {
-            Message = " Enter the store \n(click on the chip)";
+            Message = collision.gameObject.GetComponent<StoreChip>().TypeOfStore + "\nEnter the store(click on the chip)";
             this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             ReadyGoToStore = true;
             TouchObject = collision.gameObject;

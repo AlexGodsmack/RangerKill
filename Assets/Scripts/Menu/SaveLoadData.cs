@@ -7,21 +7,21 @@ using UnityEngine.SceneManagement;
 public class SaveLoadData : MonoBehaviour
 {
 
-    public GameObject SaveButton;
-    public Component PlayerInventory;
-
-    //public GameObject SlavesContainer;
-    //public GameObject WeaponContainer;
-    //public GameObject StuffContainer;
+    //public GameObject GotoMapButton;
+    public PlayerInventory PlayInv;
+    public WORK_Store StoreStack;
+    public GameObject WeapSource;
+    public GameObject StffSource;
+    public GameObject SlvSource;
 
     public void SaveAll() {
         INVENTORY newInventory = new INVENTORY();
-        newInventory.PlayerSource.Money = PlayerInventory.GetComponent<PlayerInventory>().Money;
-        newInventory.PlayerSource.Slaves = PlayerInventory.GetComponent<PlayerInventory>().Slaves;
-        newInventory.PlayerSource.Weapons = PlayerInventory.GetComponent<PlayerInventory>().Weapons;
-        newInventory.PlayerSource.Stuff = PlayerInventory.GetComponent<PlayerInventory>().Stuff;
+        newInventory.PlayerSource.Money = PlayInv.Money;
+        newInventory.PlayerSource.Slaves = PlayInv.Slaves;
+        newInventory.PlayerSource.Weapons = PlayInv.Weapons;
+        newInventory.PlayerSource.Stuff = PlayInv.Stuff;
         int GetSlavePlace = 0;
-        foreach (GameObject Slave in PlayerInventory.GetComponent<PlayerInventory>().SlavePlace) {
+        foreach (GameObject Slave in PlayInv.SlavePlace) {
             SaveSlave newSlave = new SaveSlave();
             if (Slave != null) {
                 SlaveProperties GetSlv = Slave.GetComponent<SlaveProperties>();
@@ -40,7 +40,7 @@ public class SaveLoadData : MonoBehaviour
                 newSlave.HaveGun = GetSlv.HaveGun;
                 newSlave.FullPackage = GetSlv.FullPackage;
                 int GetStuffPlace = 0;
-                foreach (SlavePackage Pack in PlayerInventory.GetComponent<PlayerInventory>().SlavesBag) {
+                foreach (SlavePackage Pack in PlayInv.SlavesBag) {
                     if (Pack.NumberOfSlave == newSlave.Number) {
                         foreach (GameObject Stuff in Pack.Place) {
                             if (Stuff != null) {
@@ -79,10 +79,11 @@ public class SaveLoadData : MonoBehaviour
             }
             GetSlavePlace += 1;
         }
-        foreach (GameObject Weapon in PlayerInventory.GetComponent<PlayerInventory>().WeaponPlace) {
+        foreach (GameObject Weapon in PlayInv.WeaponPlace) {
             if (Weapon != null) {
                 SaveWeapon newWeapon = new SaveWeapon();
                 newWeapon.ID = -Weapon.gameObject.GetInstanceID();
+                newWeapon.Name = Weapon.GetComponent<WeaponProperties>().WeapName;
                 newWeapon.Damage = Weapon.GetComponent<WeaponProperties>().Damage;
                 newWeapon.Condition = Weapon.GetComponent<WeaponProperties>().Condition;
                 newWeapon.Skin = Weapon.GetComponent<WeaponProperties>().Skin;
@@ -92,7 +93,7 @@ public class SaveLoadData : MonoBehaviour
                 newInventory.AllWeapons.Add(newWeapon);
             }
         }
-        foreach (GameObject Stuff in PlayerInventory.GetComponent<PlayerInventory>().StuffPlace) {
+        foreach (GameObject Stuff in PlayInv.StuffPlace) {
             if (Stuff != null) {
                 SaveStuff newStuff = new SaveStuff();
                 newStuff.ID = -Stuff.GetComponent<OtherStuff>().GetInstanceID();
@@ -106,25 +107,22 @@ public class SaveLoadData : MonoBehaviour
         StreamWriter WriteData = new StreamWriter(Application.persistentDataPath + "/PlayerData.json");
         WriteData.Write(SaveData);
         WriteData.Close();
-        return ;
     }
 
     public void LoadAll() {
         string json = File.ReadAllText(Application.persistentDataPath + "/PlayerData.json").ToString(); // почему-то json не читает текст через ReadAllLines
         INVENTORY LoadData = JsonUtility.FromJson<INVENTORY>(json);
-        PlayerInventory.GetComponent<PlayerInventory>().Money = LoadData.PlayerSource.Money;
-        PlayerInventory.GetComponent<PlayerInventory>().Slaves = LoadData.PlayerSource.Slaves;
-        PlayerInventory.GetComponent<PlayerInventory>().Weapons = LoadData.PlayerSource.Weapons;
-        PlayerInventory.GetComponent<PlayerInventory>().Stuff = LoadData.PlayerSource.Stuff;
 
-        int SetBags = 0;
-        foreach (SaveSlave LoadBags in LoadData.AllSlaves) {
-        }
+        PlayInv.Money = LoadData.PlayerSource.Money;
+        PlayInv.Slaves = LoadData.PlayerSource.Slaves;
+        PlayInv.Weapons = LoadData.PlayerSource.Weapons;
+        PlayInv.Stuff = LoadData.PlayerSource.Stuff;
+        PlayInv.StoreID = LoadData.PlayerSource.CurrentStore;
 
         int GetSlave = 0;
         foreach (SaveSlave LoadSlave in LoadData.AllSlaves) {
             GameObject Slave = Instantiate(Resources.Load("HeroPrefab")) as GameObject;
-            Slave.name = "B_" + GetSlave + 1;
+            Slave.name = "Slv_" + GetSlave + 1;
             Slave.GetComponent<SlaveProperties>().Number = LoadData.AllSlaves[GetSlave].Number;
             Slave.GetComponent<SlaveProperties>().Health = LoadData.AllSlaves[GetSlave].Health;
             Slave.GetComponent<SlaveProperties>().FullHealth = LoadData.AllSlaves[GetSlave].FullHealth;
@@ -138,10 +136,10 @@ public class SaveLoadData : MonoBehaviour
             Slave.GetComponent<SlaveProperties>().WeaponSkin = LoadData.AllSlaves[GetSlave].WeaponSkin;
             Slave.GetComponent<SlaveProperties>().HaveGun = LoadData.AllSlaves[GetSlave].HaveGun;
             Slave.GetComponent<SlaveProperties>().FullPackage = LoadData.AllSlaves[GetSlave].FullPackage;
-            PlayerInventory.GetComponent<PlayerInventory>().SlavePlace[LoadData.AllSlaves[GetSlave].PlaceOnField] = Slave;
+            PlayInv.SlavePlace[LoadData.AllSlaves[GetSlave].PlaceOnField] = Slave;
             SlavePackage newPack = new SlavePackage();
             newPack.NumberOfSlave = LoadData.AllSlaves[GetSlave].Number;
-            PlayerInventory.GetComponent<PlayerInventory>().SlavesBag.Add(newPack);
+            PlayInv.SlavesBag.Add(newPack);
 
 
             GetSlave += 1;
@@ -150,17 +148,14 @@ public class SaveLoadData : MonoBehaviour
         foreach (SaveWeapon LoadWeapon in LoadData.AllWeapons) {
             GameObject Weapon = Instantiate(Resources.Load("WeaponDoll")) as GameObject;
             Weapon.name = "W_" + GetWeapon + 1;
+            Weapon.GetComponent<WeaponProperties>().WeapName = LoadData.AllWeapons[GetWeapon].Name;
             Weapon.GetComponent<WeaponProperties>().Number = LoadData.AllWeapons[GetWeapon].ID;
             Weapon.GetComponent<WeaponProperties>().Damage = LoadData.AllWeapons[GetWeapon].Damage;
             Weapon.GetComponent<WeaponProperties>().Condition = LoadData.AllWeapons[GetWeapon].Condition;
             Weapon.GetComponent<WeaponProperties>().Skin = LoadData.AllWeapons[GetWeapon].Skin;
             Weapon.GetComponent<WeaponProperties>().Bullets = LoadData.AllWeapons[GetWeapon].Bullets;
             Weapon.GetComponent<WeaponProperties>().Price = LoadData.AllWeapons[GetWeapon].Price;
-            GameObject L = Instantiate(Resources.Load("Lighter_03")) as GameObject;
-            L.name = "Lighter";
-            L.transform.SetParent(Weapon.transform);
-            L.transform.localPosition = new Vector3(0, 0, -0.1f);
-            PlayerInventory.GetComponent<PlayerInventory>().WeaponPlace[GetWeapon] = Weapon;
+            PlayInv.WeaponPlace[GetWeapon] = Weapon;
             GetWeapon += 1;
         }
 
@@ -172,25 +167,21 @@ public class SaveLoadData : MonoBehaviour
             Stuff.GetComponent<OtherStuff>().Number = LoadData.AllStuff[GetStuff].ID;
             Stuff.GetComponent<OtherStuff>().Skin = LoadData.AllStuff[GetStuff].Skin;
             Stuff.GetComponent<OtherStuff>().Liters = LoadData.AllStuff[GetStuff].Liters;
-            GameObject L = Instantiate(Resources.Load("Lighter_03")) as GameObject;
-            L.name = "Lighter";
-            L.transform.SetParent(Stuff.transform);
-            L.transform.localPosition = new Vector3(0, 0, -0.1f);
-            PlayerInventory.GetComponent<PlayerInventory>().StuffPlace[GetStuff] = Stuff;
+            PlayInv.StuffPlace[GetStuff] = Stuff;
             GetStuff += 1;
         }
 
-        for (int i = 0; i < PlayerInventory.GetComponent<PlayerInventory>().WeaponPlace.Length; i++) {
-            if (PlayerInventory.GetComponent<PlayerInventory>().WeaponPlace[i] != null) {
-                GameObject GetThisWeap = PlayerInventory.GetComponent<PlayerInventory>().WeaponPlace[i].gameObject;
+        for (int i = 0; i < PlayInv.WeaponPlace.Length; i++) {
+            if (PlayInv.WeaponPlace[i] != null) {
+                GameObject GetThisWeap = PlayInv.WeaponPlace[i].gameObject;
                 int WNum = GetThisWeap.GetComponent<WeaponProperties>().Number;
                 for (int s = 0; s < LoadData.AllSlaves.Count; s++) {
                     for (int p = 0; p < LoadData.AllSlaves[s].Package.Length; p++) {
                         if (LoadData.AllSlaves[s].Package[p] == WNum) {
-                            foreach (SlavePackage GetPack in PlayerInventory.GetComponent<PlayerInventory>().SlavesBag) {
+                            foreach (SlavePackage GetPack in PlayInv.SlavesBag) {
                                 if (GetPack.NumberOfSlave == LoadData.AllSlaves[s].Number) {
                                     GetPack.Place[p] = GetThisWeap;
-                                    PlayerInventory.GetComponent<PlayerInventory>().WeaponPlace[i] = null;
+                                    PlayInv.WeaponPlace[i] = null;
                                 }
                             }
                         }
@@ -198,17 +189,17 @@ public class SaveLoadData : MonoBehaviour
                 }
             }
         }
-        for (int s = 0; s < PlayerInventory.GetComponent<PlayerInventory>().StuffPlace.Length; s++) {
-            if (PlayerInventory.GetComponent<PlayerInventory>().StuffPlace[s] != null) {
-                GameObject GetThisStuff = PlayerInventory.GetComponent<PlayerInventory>().StuffPlace[s].gameObject;
+        for (int s = 0; s < PlayInv.StuffPlace.Length; s++) {
+            if (PlayInv.StuffPlace[s] != null) {
+                GameObject GetThisStuff = PlayInv.StuffPlace[s].gameObject;
                 int NumStff = GetThisStuff.GetComponent<OtherStuff>().Number;
                 for (int slv = 0; slv < LoadData.AllSlaves.Count; slv++) {
                     for (int p = 0; p < LoadData.AllSlaves[slv].Package.Length; p++) {
                         if (LoadData.AllSlaves[slv].Package[p] == NumStff) {
-                            foreach (SlavePackage GetPack in PlayerInventory.GetComponent<PlayerInventory>().SlavesBag) {
+                            foreach (SlavePackage GetPack in PlayInv.SlavesBag) {
                                 if (GetPack.NumberOfSlave == LoadData.AllSlaves[slv].Number) {
                                     GetPack.Place[p] = GetThisStuff;
-                                    PlayerInventory.GetComponent<PlayerInventory>().StuffPlace[s] = null;
+                                    PlayInv.StuffPlace[s] = null;
                                 }
                             }
                         }
@@ -216,10 +207,10 @@ public class SaveLoadData : MonoBehaviour
                 }
             }
         }
-        foreach (SlavePackage Pack in PlayerInventory.GetComponent<PlayerInventory>().SlavesBag) {
+        foreach (SlavePackage Pack in PlayInv.SlavesBag) {
             foreach (GameObject GetItem in Pack.Place) {
                 if (GetItem != null && GetItem.GetComponent<WeaponProperties>() != null) {
-                    foreach (GameObject Slave in PlayerInventory.GetComponent<PlayerInventory>().SlavePlace) {
+                    foreach (GameObject Slave in PlayInv.SlavePlace) {
                         if (Slave != null && Pack.NumberOfSlave == Slave.GetComponent<SlaveProperties>().Number) {
                             Slave.GetComponent<SlaveProperties>().WeaponXRef = GetItem;
                         }
@@ -229,29 +220,177 @@ public class SaveLoadData : MonoBehaviour
         }
     }
 
-    public void PutAllOnPlace() {
+    public void SetSourceToFolders() {
+        int ReNumSlaves = 0;
+        foreach (GameObject Slv in PlayInv.SlavePlace) {
+            if (Slv != null) {
+                foreach (SlavePackage Pack in PlayInv.SlavesBag) {
+                    if (Slv.GetComponent<SlaveProperties>().Number == Pack.NumberOfSlave) {
+                        Slv.GetComponent<SlaveProperties>().Number = Slv.GetInstanceID();
+                        Pack.NumberOfSlave = Slv.GetInstanceID();
+                    }
+                }
+            }
+        }
+        foreach (GameObject Slv in PlayInv.SlavePlace) {
+            if (Slv != null) {
+                ReNumSlaves += 1;
+                foreach (SlavePackage Pack in PlayInv.SlavesBag) {
+                    if (Slv.GetComponent<SlaveProperties>().Number == Pack.NumberOfSlave) {
+                        Slv.GetComponent<SlaveProperties>().Number = ReNumSlaves;
+                        Pack.NumberOfSlave = ReNumSlaves;
+                    }
+                }
+            }
+        }
 
-        string json = File.ReadAllText(Application.persistentDataPath + "/PlayerData.json").ToString();
-        INVENTORY LoadData = JsonUtility.FromJson<INVENTORY>(json);
+        //int SetSlavePlace = 0;
+        //foreach (GameObject Slv in PlayInv.SlavePlace) {
+        //    if (Slv != null) {
+        //        GameObject GetPlace = SlavesBoughtPanel.transform.Find("Places").transform.GetChild(SetSlavePlace).gameObject;
+        //        Slv.transform.position = GetPlace.transform.position;
+        //        GetPlace.active = false;
+        //        Slv.transform.SetParent(SlavesBoughtPanel.transform.Find("Places/BoughtSlaves").transform);
+        //        Slv.GetComponent<SlaveProperties>().Bought = true;
+        //        SetSlavePlace += 1;
+        //    }
+        //}
 
+        int SetSlvPlace = 0;
+        foreach (GameObject slv in PlayInv.SlavePlace) {
+            if (slv != null) {
+                slv.transform.SetParent(SlvSource.transform);
+                slv.transform.localPosition = new Vector3(0, 0, 0);
+                SetSlvPlace += 1;
+            }
+        }
 
+        int SetWpnPlace = 0;
+        foreach (GameObject wpn in PlayInv.WeaponPlace) {
+            if (wpn != null) {
+                wpn.transform.SetParent(WeapSource.transform);
+                wpn.transform.localPosition = new Vector3(0, 0, 0);
+                SetWpnPlace += 1;
+            }
+        }
+
+        int SetStffPlace = 0;
+        foreach (GameObject stff in PlayInv.StuffPlace) {
+            if (stff != null) {
+                stff.transform.SetParent(StffSource.transform);
+                stff.transform.localPosition = new Vector3(0, 0, 0);
+                SetStffPlace += 1;
+            }
+        }
+        
     }
 
+    public void SaveStoresInfo() {
+        if (File.Exists(Application.persistentDataPath + "/StoresStack.json")) {
+            string GetInfo = File.ReadAllText(Application.persistentDataPath + "/StoresStack.json");
+            StoreStack StoresInfo = JsonUtility.FromJson<StoreStack>(GetInfo);
+            int StoreID = PlayInv.StoreID;
+
+            foreach (StorePoint Store in StoresInfo.storePoint) {
+                if (Store.StoreID == StoreID) {
+                    Store.Lot1.Clear();
+                    Store.Lot2.Clear();
+                    Store.Lot3.Clear();
+                    Store.Lot4.Clear();
+                    foreach (GameObject GetItem in StoreStack.Items) {
+                        if (GetItem.GetComponent<SlaveProperties>() != null) {
+
+                            SlaveProperties CheckProp = GetItem.GetComponent<SlaveProperties>();
+                            SlvLot NewSlv = new SlvLot();
+
+                            NewSlv.Skin = CheckProp.Skin;
+                            NewSlv.Health = CheckProp.Health;
+                            NewSlv.FullHealth = CheckProp.FullHealth;
+                            NewSlv.Damage = CheckProp.Damage;
+                            NewSlv.Accuracy = CheckProp.Accuracy;
+                            NewSlv.Level = CheckProp.Level;
+                            NewSlv.Price = CheckProp.Price;
+
+                            Store.Lot1.Add(NewSlv);
+                        }
+                        if (GetItem.GetComponent<WeaponProperties>() != null) {
+                            WeaponProperties CheckProp = GetItem.GetComponent<WeaponProperties>();
+                            WpnLot NewWpn = new WpnLot();
+
+                            NewWpn.Name = CheckProp.name;
+                            NewWpn.Skin = CheckProp.Skin;
+                            NewWpn.Price = CheckProp.Price;
+                            NewWpn.Damage = CheckProp.Damage;
+                            NewWpn.Condition = CheckProp.Condition;
+                            NewWpn.Bullets = CheckProp.Bullets;
+
+                            Store.Lot2.Add(NewWpn);
+                        }
+                        if (GetItem.GetComponent<BulletsProperties>() != null) {
+                            BulletsProperties CheckProp = GetItem.GetComponent<BulletsProperties>();
+                            BulLot NewBul = new BulLot();
+
+                            NewBul.Skin = CheckProp.Skin;
+                            NewBul.Name = CheckProp.Name;
+                            NewBul.Count = CheckProp.Count;
+                            NewBul.Price = CheckProp.Price;
+
+                            Store.Lot3.Add(NewBul);
+                        }
+                        if (GetItem.GetComponent<OtherStuff>() != null) {
+                            OtherStuff CheckProp = GetItem.GetComponent<OtherStuff>();
+                            StffLot NewStff = new StffLot();
+
+                            NewStff.Skin = CheckProp.Skin;
+                            NewStff.Price = CheckProp.Price;
+                            NewStff.Liters = CheckProp.Liters;
+
+                            Store.Lot4.Add(NewStff);
+                        }
+                    }
+                }
+            }
+
+            string NewStoreData = JsonUtility.ToJson(StoresInfo);
+            StreamWriter WriteNewData = new StreamWriter(Application.persistentDataPath + "/StoresStack.json");
+            WriteNewData.Write(NewStoreData);
+            WriteNewData.Close();
+
+        }
+    }
 
     void Start()
     {
-        //if (SaveButton != null) {
-        //    SaveButton.transform.position = TopRight.transform.position + new Vector3(-0.2f, -0.1f, 0);
-        //}
+
     }
 
     void Update()
     {
 
-        if (SaveButton != null && SaveButton.GetComponent<ButtonSample>().isPressed == true) {
-            SaveAll();
-            SceneManager.LoadScene(2);
-        }
+        /////************************************************* GO TO MAP ************************************************
+        //if (GotoMapButton != null) {
+        //    if (GotoMapButton.GetComponent<ButtonSample>().isPressed == true) {
+        //        SaveAll();
+        //        SaveStoresInfo();
+        //        SceneManager.LoadScene(2);
+        //    }
+        //}
+
+    }
+}
+[System.Serializable]
+public class PlayerDataChanger {
+    public void CreateNewPlayerData() {
+
+        //string json = File.ReadAllText(Application.persistentDataPath + "/PlayerData.json").ToString();
+        INVENTORY NewPlayer = new INVENTORY();
+        //NewPlayer.TypeOfStore = "Slaves";
+        NewPlayer.PlayerSource.CurrentStore = 0;
+        NewPlayer.PlayerSource.Money = Random.Range(600, 800) * 5;
+        string PlayerToStr = JsonUtility.ToJson(NewPlayer);
+        StreamWriter WriteData = new StreamWriter(Application.persistentDataPath + "/PlayerData.json");
+        WriteData.Write(PlayerToStr);
+        WriteData.Close();
 
     }
 }
@@ -263,6 +402,7 @@ public class PlayerSource {
     public int Slaves;
     public int Weapons;
     public int Stuff;
+    public int CurrentStore;
 }
 
 [System.Serializable]
@@ -288,6 +428,7 @@ public class SaveSlave {
 [System.Serializable]
 public class SaveWeapon {
     public int ID;
+    public string Name;
     public int Damage;
     public int Condition;
     public int Skin;

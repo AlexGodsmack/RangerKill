@@ -24,18 +24,18 @@ public class SlavesPanel : MonoBehaviour
     public float MyTime;
     public int LengthOfSlaves;
 
-    public TextMesh Health;
-    public TextMesh Damage;
-    public TextMesh Accuracy;
-    public TextMesh Level;
-    public TextMesh Price;
+    //public TextMesh Health;
+    //public TextMesh Damage;
+    //public TextMesh Accuracy;
+    //public TextMesh Level;
+    //public TextMesh Price;
 
-    public int HealthGrade;
-    public int DamageGrade;
-    public int AccuracyGrade;
-    public GameObject HG;
-    public GameObject DG;
-    public GameObject AG;
+    //public int HealthGrade;
+    //public int DamageGrade;
+    //public int AccuracyGrade;
+    //public GameObject HG;
+    //public GameObject DG;
+    //public GameObject AG;
 
     void Start()
     {
@@ -90,9 +90,9 @@ public class SlavesPanel : MonoBehaviour
             RightButton.GetComponent<ButtonSample>().isActive = true;
         }
 
-        HG.GetComponent<GradeStore>().GetGrade = HealthGrade;
-        DG.GetComponent<GradeStore>().GetGrade = DamageGrade;
-        AG.GetComponent<GradeStore>().GetGrade = AccuracyGrade;
+        //HG.GetComponent<GradeStore>().GetGrade = HealthGrade;
+        //DG.GetComponent<GradeStore>().GetGrade = DamageGrade;
+        //AG.GetComponent<GradeStore>().GetGrade = AccuracyGrade;
 
     }
 }

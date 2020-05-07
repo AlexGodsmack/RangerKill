@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -209,6 +210,7 @@ GameObject:
   - component: {fileID: 677433148}
   - component: {fileID: 677433147}
   - component: {fileID: 677433150}
+  - component: {fileID: 677433151}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -296,6 +298,20 @@ MonoBehaviour:
   Continue: {fileID: 1637944506}
   StartNewGame: {fileID: 858217548}
   Quit: {fileID: 1241504076}
+--- !u!114 &677433151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677433146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea22605d6b4e6ec46bc0a0fa19486c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WeaponSpec: {fileID: 4900000, guid: 91b9812f3d6f5724caef622389e2d205, type: 3}
+  BulletSpec: {fileID: 4900000, guid: 1b5065529e524b64eb01628dc7cb25d4, type: 3}
 --- !u!1 &711905518
 GameObject:
   m_ObjectHideFlags: 0

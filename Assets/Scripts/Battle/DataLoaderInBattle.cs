@@ -40,7 +40,7 @@ public class DataLoaderInBattle : MonoBehaviour
         if (File.Exists(Application.persistentDataPath + "/PlayerData.json")) {
 
             SaveLoadData GetLoader = new SaveLoadData();
-            GetLoader.PlayerInventory = this.GetComponent<PlayerInventory>();
+            GetLoader.PlayInv = this.GetComponent<PlayerInventory>();
             GetLoader.LoadAll();
 
             int NumSlv = 0;

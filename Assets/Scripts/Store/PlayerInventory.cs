@@ -15,6 +15,8 @@ public class PlayerInventory : MonoBehaviour {
     public int Slaves;
     public int Weapons;
     public int Stuff;
+    //public string TypeOfStore;
+    public int StoreID;
 
     public GameObject[] SlavePlace;
     public GameObject[] WeaponPlace;

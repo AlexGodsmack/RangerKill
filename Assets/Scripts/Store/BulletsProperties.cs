@@ -34,13 +34,13 @@ public class BulletsProperties : MonoBehaviour
             this.GetComponent<SpriteRenderer>().material = Additive;
         }
 
-        Price = int.Parse(GetData[5 * Skin - 1]);
+        //Price = int.Parse(GetData[5 * Skin - 1]);
 
-        for (int i = 1; i < 11; i++) {
-            if (Skin == i) {
-                Name = GetData[5 * (Skin - 1)] + " " + GetData[5 * Skin - 2];
-            }
-        }
+        //for (int i = 1; i < 11; i++) {
+        //    if (Skin == i) {
+        //        Name = GetData[5 * (Skin - 1)] + " " + GetData[5 * Skin - 2];
+        //    }
+        //}
         
     }
 
@@ -49,13 +49,17 @@ public class BulletsProperties : MonoBehaviour
 
         if (isActive == false) {
             if (Bought == false) {
-                this.transform.GetChild(0).gameObject.active = false;
+                if (this.transform.GetChild(0).gameObject != null) {
+                    this.transform.GetChild(0).gameObject.active = false;
+                }
             } else {
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             }
         } else {
             if (Bought == false) {
-                this.transform.GetChild(0).gameObject.active = true;
+                if (this.transform.GetChild(0).gameObject != null) {
+                    this.transform.GetChild(0).gameObject.active = true;
+                }
             } else {
                 this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             }

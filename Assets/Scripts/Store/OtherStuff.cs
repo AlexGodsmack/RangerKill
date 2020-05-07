@@ -36,20 +36,20 @@ public class OtherStuff : MonoBehaviour
         if (Skin == 1) {
             Description = "Medicine chest. \n\nHeals your slaves \nup to 100% of health";
             ShortDescription = "Medicine\nchest.\n\nHeals your\nslaves\nup to 100%\nof health";
-            Price = 200;
+            //Price = 200;
         }
         if (Skin == 2) {
-            if (IfNewWater == true) {
-                Liters = 100;
-            }
+            //if (IfNewWater == true) {
+            //    Liters = 100;
+            //}
             Description = "Water. \n\nNeed for move on map \nLiters: " + Liters.ToString();
             ShortDescription = "Water.\n\nNeed for\nmove on map\nLiters: " + Liters.ToString();
-            Price = 100;
+            //Price = 100;
         }
         if (Skin == 3) {
             Description = "Buff. \n\nIncreases power of shot \nto 300% due one pass";
             ShortDescription = "Buff.\n\nIncreases\npower\nof shot\nto 300% due\none pass";
-            Price = 150;
+            //Price = 150;
         }
         if (Skin == 4) {
             Description = "Money";
@@ -61,20 +61,20 @@ public class OtherStuff : MonoBehaviour
         if (Skin == 1) {
             Description = "Medicine chest. \n\nHeals your slaves \nup to 100% of health";
             ShortDescription = "Medicine\nchest.\n\nHeals your\nslaves\nup to 100%\nof health";
-            Price = 200;
+            //Price = 200;
         }
         if (Skin == 2) {
-            if (IfNewWater == true) {
-                Liters = 100;
-            }
+            //if (IfNewWater == true) {
+            //    Liters = 100;
+            //}
             Description = "Water. \n\nNeed for move on map \nLiters: " + Liters.ToString();
             ShortDescription = "Water.\n\nNeed for\nmove on map\nLiters: " + Liters.ToString();
-            Price = 100;
+            //Price = 100;
         }
         if (Skin == 3) {
             Description = "Buff. \n\nIncreases power of shot \nto 300% due one pass";
             ShortDescription = "Buff.\n\nIncreases\npower\nof shot\nto 300% due\none pass";
-            Price = 150;
+            //Price = 150;
         }
         if (Skin == 4) {
             Description = "Money";

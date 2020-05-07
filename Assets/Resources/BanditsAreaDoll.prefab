@@ -50,10 +50,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 03f36dcab471fa44e96729c6c51ccdc0, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -229,6 +230,7 @@ MonoBehaviour:
   Clan: 
   Coverage: 0
   Population: 0
+  Number: 0
   Colliders:
   - {fileID: 7147615738584721552}
   - {fileID: 797467978262360973}

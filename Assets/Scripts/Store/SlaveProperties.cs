@@ -4,9 +4,9 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
 
-public class SlaveProperties : MonoBehaviour
-{
+public class SlaveProperties : MonoBehaviour {
 
+    [Header("Features")]
     public int Number;
     public int Health;
     public int FullHealth;
@@ -19,38 +19,38 @@ public class SlaveProperties : MonoBehaviour
     public float PowerOfShot;
     public float Distance;
     public int Efficiency;
-
     //public string[] Package;
-
+    [Space]
     public bool isActive;
-
+    [Space]
     public bool Bought;
-
+    [Space]
     public bool HaveGun;
-
+    [Space]
     public bool ShowHealthbar;
-
+    [Space]
     public bool FullPackage;
-
+    [Space]
     public bool IN_RUSH;
-
+    [Space]
     public int WeaponSkin;
 
+    [Header("Objects")]
     public GameObject WeaponXRef;
-
+    [Space]
     public GameObject Lighter;
     public GameObject InventoryPack;
     public GameObject SlaveXRef;
     public GameObject Goal;
     public GameObject Healthbar;
     public GameObject HealthLineProgress;
-    public GameObject LevelIndicator;
+    //public GameObject LevelIndicator;
     public GameObject Fire;
     public GameObject ShellContainer;
-
+    [Header("Sounds")]
     public AudioSource[] WeaponSounds;
     public AudioSource Death;
-
+    [Header("Materials")]
     public Material Additive;
     public Material Default;
 
@@ -98,17 +98,17 @@ public class SlaveProperties : MonoBehaviour
             this.GetComponent<SpriteRenderer>().material = Default;
             this.GetComponent<Animator>().SetInteger("WithWeapon", WeaponSkin);
             if (isActive == true) {
-                Lighter.active = true;
+                Lighter.GetComponent<SlaveLighter>().Activate = true;
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             } else {
-                Lighter.active = false;
+                Lighter.GetComponent<SlaveLighter>().Activate = false;
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             }
         } else {
             this.GetComponent<Animator>().SetBool("ThisPersonBought", true);
             this.GetComponent<SpriteRenderer>().material = Additive;
             this.GetComponent<Animator>().SetInteger("WithWeapon", 0);
-            Lighter.active = false;
+            Lighter.GetComponent<SlaveLighter>().Activate = false;
             if (isActive == true) {
                 this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             } else {
@@ -127,7 +127,7 @@ public class SlaveProperties : MonoBehaviour
             Healthbar.active = false;
         }
 
-        LevelIndicator.GetComponent<TextMesh>().text = Level.ToString();
+        //LevelIndicator.GetComponent<TextMesh>().text = Level.ToString();
         if (WeaponSkin != 0) {
             Fire.GetComponent<Fire>().Skin = WeaponSkin;
         }

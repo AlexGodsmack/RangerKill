@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2184146112118643563}
   - component: {fileID: 7347344591163201256}
   - component: {fileID: 217421425842428748}
+  - component: {fileID: 7076304285131064988}
   m_Layer: 16
   m_Name: StoresDoll
   m_TagString: Untagged
@@ -47,10 +48,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 03f36dcab471fa44e96729c6c51ccdc0, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -71,12 +73,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: fa4cf9495c3dcfe47bb99e47defbf2b7, type: 3}
+  m_Sprite: {fileID: -4562446710072012545, guid: fa4cf9495c3dcfe47bb99e47defbf2b7,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 0.5, y: 0.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -99,8 +102,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.32, y: 0.32}
-    newSize: {x: 0.32, y: 0.32}
+    oldSize: {x: 0.5, y: 0.5}
+    newSize: {x: 0.5, y: 0.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -129,3 +132,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7076304285131064988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4038684919100556080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cce98a03d9c795344887134acfc960ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TypeOfStore: 
+  Skin:
+  - {fileID: -4562446710072012545, guid: fa4cf9495c3dcfe47bb99e47defbf2b7, type: 3}
+  - {fileID: 7888265565095353193, guid: fa4cf9495c3dcfe47bb99e47defbf2b7, type: 3}
+  - {fileID: -7424633517503713783, guid: fa4cf9495c3dcfe47bb99e47defbf2b7, type: 3}
+  - {fileID: -1648819195685719964, guid: fa4cf9495c3dcfe47bb99e47defbf2b7, type: 3}
+  - {fileID: 2423884199226243875, guid: fa4cf9495c3dcfe47bb99e47defbf2b7, type: 3}

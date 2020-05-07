@@ -595,7 +595,7 @@ public class WORK_Battle : MonoBehaviour
 
             if (BackToMap.GetComponent<ButtonSample>().isPressed == true) {
                 SaveLoadData newSaveLoad = new SaveLoadData();
-                newSaveLoad.PlayerInventory = this.GetComponent<PlayerInventory>();
+                newSaveLoad.PlayInv = this.GetComponent<PlayerInventory>();
                 newSaveLoad.SaveAll();
 
                 int GetBodies = this.GetComponent<DataLoaderInBattle>().Count;

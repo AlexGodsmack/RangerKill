@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class WORK_Store : MonoBehaviour
 {
+    
+    [Header("Anchors")]
     public GameObject PosRightTop;
     public GameObject PosLeftTop;
     public GameObject PosRightBottom;
@@ -16,6 +18,7 @@ public class WORK_Store : MonoBehaviour
     public GameObject SlavesBuyPos;
     public GameObject Center;
 
+    [Header("Main Objects")]
     public GameObject MainMenuPanel;
     public GameObject WeaponProperties;
     public GameObject WeaponBuy;
@@ -24,7 +27,16 @@ public class WORK_Store : MonoBehaviour
     public GameObject SLAVES;
     public GameObject WEAPANDSTUFF;
     public GameObject INVENTORY;
+    [Space]
+    public GameObject AreaForSlaves;
+    [Space]
+    //public GameObject SlavesBuyPanel;
+    public GameObject SlavesBoughtPanel;
+    //public GameObject SlavesPropertiesPanel;
+    [Space]
+    public List<GameObject> Items;
 
+    [Header("Texts")]
     public GameObject GeneralText;
     public GameObject WeaponInfo;
     public GameObject WeapInvInfo;
@@ -32,26 +44,26 @@ public class WORK_Store : MonoBehaviour
     public GameObject BulletInfo;
     public GameObject StuffInfo;
 
+    [Header("Menu")]
     public GameObject MenuHead;
+    public GameObject[] Indicators;
     public GameObject MenuExit;
 
-    public GameObject AreaForSlaves;
-
-    public GameObject SlavesBuyPanel;
-    public GameObject SlavesBoughtPanel;
-    public GameObject SlavesPropertiesPanel;
-
+    [Header("Counts")]
     public int CountOfSlaves;
     public int CountOfWeapon;
     public int CountOfBullets;
     public int CountOfStuff;
 
+    [Header("Working Elemets")]
     public GameObject isActiveSlave;
     public GameObject isActiveWeapon;
     public GameObject isActiveBullet;
     public GameObject isActiveStuff;
     public GameObject BuySlaveButton;
     public GameObject BuyWeapStuffButton;
+    //public GameObject GotoMapButton;
+            
     public GameObject Switcher;
     public AudioSource PickSound;
 
@@ -69,6 +81,7 @@ public class WORK_Store : MonoBehaviour
 
     private PlayerInventory PlayInv;
 
+
     void Start()
     {
 
@@ -76,15 +89,15 @@ public class WORK_Store : MonoBehaviour
         PlayInv = this.GetComponent<PlayerInventory>();
         MenuHead.transform.position = PosLeftTop.transform.position;
         SlavesBoughtPanel.transform.position = PosMidBottom.transform.position;
-        SlavesBuyPanel.transform.position = new Vector3(PosRightBottom.transform.position.x, -0.2f, SlavesBoughtPanel.transform.position.z);
-        SlavesPropertiesPanel.transform.position = PosMidLeft.transform.position;
+        //SlavesBuyPanel.transform.position = new Vector3(PosRightBottom.transform.position.x, -0.2f, SlavesBoughtPanel.transform.position.z);
+        //SlavesPropertiesPanel.transform.position = PosMidLeft.transform.position;
         WeaponProperties.transform.position = PosRightBottom.transform.position;
         WeaponBuy.transform.position = PosLeftBottom.transform.position;
         InventoryProperties.transform.position = PosMidBottom.transform.position;
 
         ///*********************************************** LOAD ALL INVENTORY *****************************************************
 
-        if (File.Exists(Application.persistentDataPath + "/PlayerData.json")) {
+        if (File.Exists(Application.persistentDataPath + "/PlayerData.json")) { 
             this.GetComponent<SaveLoadData>().LoadAll();
 
             int ReNumSlaves = 0;
@@ -169,96 +182,111 @@ public class WORK_Store : MonoBehaviour
             }
         }
 
-        ///*********************************************** GENERATE SLAVES *****************************************************
+        if (File.Exists(Application.persistentDataPath + "/StoresStack.json")) {
+            string GetInfo = File.ReadAllText(Application.persistentDataPath + "/StoresStack.json");
+            StoreStack GetStore = JsonUtility.FromJson<StoreStack>(GetInfo);
 
-        CountOfSlaves = Random.Range(3, 20);
+            foreach (StorePoint GetStorePoint in GetStore.storePoint) {
+                if (GetStorePoint.StoreID == PlayInv.StoreID) {
+
+                    ///*********************************************** IMPORT SLAVES *****************************************************
+                    //int p = 0;
+                    foreach (SlvLot Slave in GetStorePoint.Lot1) {
+                        GameObject P = Instantiate(Resources.Load("HeroPrefab")) as GameObject;
+                        P.name = "Slv_" + CountOfSlaves;
+                        SlaveProperties NewSlaveProps = P.GetComponent<SlaveProperties>();
+                        NewSlaveProps.Number = CountOfSlaves;
+                        NewSlaveProps.Skin = Slave.Skin;
+                        NewSlaveProps.Health = Slave.Health;
+                        NewSlaveProps.FullHealth = Slave.FullHealth;
+                        NewSlaveProps.Damage = Slave.Damage;
+                        NewSlaveProps.Accuracy = Slave.Accuracy;
+                        NewSlaveProps.Level = Slave.Level;
+                        NewSlaveProps.Price = Slave.Price;
+                        P.transform.SetParent(AreaForSlaves.transform);
+                        P.transform.localPosition = new Vector3(-8.5f + 0.5f * CountOfSlaves, 0.15f, 2.5f);
+                        //p += 1;
+                        CountOfSlaves += 1;
+                        Items.Add(P.gameObject);
+                    }
+
+                    ///*********************************************** IMPORT WEAPON *****************************************************
+                    //int w = 0;
+                    foreach (WpnLot Weapon in GetStorePoint.Lot2) {
+                        GameObject W = Instantiate(Resources.Load("WeaponDoll")) as GameObject;
+                        W.name = "Wpn_" + CountOfWeapon.ToString();
+                        WeaponProperties NewWeapProp = W.GetComponent<WeaponProperties>();
+                        NewWeapProp.Number = CountOfWeapon;
+                        NewWeapProp.Skin = Weapon.Skin;
+                        NewWeapProp.WeapName = Weapon.Name;
+                        NewWeapProp.Price = Weapon.Price;
+                        NewWeapProp.Damage = Weapon.Damage;
+                        NewWeapProp.Condition = Weapon.Condition;
+                        NewWeapProp.Bullets = Weapon.Bullets;
+                        W.transform.SetParent(WeaponBack.transform);
+                        W.transform.localPosition = WeaponBack.transform.GetChild(CountOfWeapon + 1).transform.localPosition + new Vector3(0, -0.08f, -0.2f);
+                        W.transform.SetParent(WeaponBack.transform.Find("Weapons").transform);
+                        GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
+                        L.transform.SetParent(W.transform);
+                        L.name = "Lighter";
+                        L.transform.localPosition = new Vector3(0, 0, 0.1f);
+                        CountOfWeapon += 1;
+                        Items.Add(W.gameObject);
+                    }
+
+                    ///*********************************************** IMPORT BULLETS *****************************************************
+                    //int b = 0;
+                    foreach (BulLot Bullets in GetStorePoint.Lot3) {
+                        GameObject B = Instantiate(Resources.Load("BulletsDoll")) as GameObject;
+                        B.name = "Bul_" + CountOfBullets.ToString();
+                        BulletsProperties NewBulProp = B.GetComponent<BulletsProperties>();
+                        NewBulProp.Skin = Bullets.Skin;
+                        NewBulProp.Name = Bullets.Name;
+                        NewBulProp.Price = Bullets.Price;
+                        NewBulProp.Count = Bullets.Count;
+                        B.transform.SetParent(WeaponBack.transform);
+                        B.transform.localPosition = WeaponBack.transform.GetChild(CountOfBullets + 1).transform.localPosition + new Vector3(0, -0.08f, -0.2f);
+                        B.transform.SetParent(WeaponBack.transform.Find("Bullets").transform);
+                        GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
+                        L.transform.SetParent(B.transform);
+                        L.name = "Lighter";
+                        L.transform.localPosition = new Vector3(0, 0, 0.1f);
+                        CountOfBullets += 1;
+                        Items.Add(B.gameObject);
+                    }
+
+                    ///*********************************************** IMPORT STUFF *****************************************************
+                    int s = 0;
+                    foreach (StffLot Stuff in GetStorePoint.Lot4) {
+                        GameObject S = Instantiate(Resources.Load("OtherStuff")) as GameObject;
+                        S.name = "Stf_" + CountOfStuff.ToString();
+                        OtherStuff NewStuffProp = S.GetComponent<OtherStuff>();
+                        NewStuffProp.Skin = Stuff.Skin;
+                        NewStuffProp.Price = Stuff.Price;
+                        NewStuffProp.Liters = Stuff.Liters;
+                        if (S.GetComponent<OtherStuff>().Skin == 2) {
+                            S.GetComponent<OtherStuff>().IfNewWater = true;
+                        }
+                        S.transform.SetParent(WeaponBack.transform);
+                        S.transform.localPosition = WeaponBack.transform.GetChild(CountOfStuff + 1).transform.localPosition + new Vector3(0, -0.08f, -0.2f);
+                        S.transform.SetParent(WeaponBack.transform.Find("Stuff").transform);
+                        GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
+                        L.transform.SetParent(S.transform);
+                        L.name = "Lighter";
+                        L.transform.localPosition = new Vector3(0, 0, 0.1f);
+                        CountOfStuff += 1;
+                        Items.Add(S.gameObject);
+                    }
+
+                }
+            }
+        }
         this.transform.Find("SLAVES").GetComponent<SlavesPanel>().LengthOfSlaves = CountOfSlaves;
-
-        for (int p = 1; p < CountOfSlaves; p++) {
-
-            GameObject P = Instantiate(Resources.Load("HeroPrefab")) as GameObject;
-            P.name = "S_" + p;
-            P.GetComponent<SlaveProperties>().Number = p;
-            int RandomHealth = Random.Range(9, 90) * 5; //between 45  and  450
-            P.GetComponent<SlaveProperties>().Health = RandomHealth;
-            P.GetComponent<SlaveProperties>().FullHealth = RandomHealth;
-            if (RandomHealth >= 225) {
-                P.GetComponent<SlaveProperties>().Damage = Random.Range(4, 12) * 5;//between 20 to 60
-            }else {
-                P.GetComponent<SlaveProperties>().Damage = Random.Range(12, 21) * 5;//between 60 to 105
-            }
-            P.GetComponent<SlaveProperties>().Accuracy = Random.Range(3, 10);
-            P.GetComponent<SlaveProperties>().Battles = 0;
-            P.GetComponent<SlaveProperties>().Level = 1;
-            P.GetComponent<SlaveProperties>().Skin = Random.Range(1, 6);
-            P.transform.SetParent(AreaForSlaves.transform);
-            P.transform.localPosition = new Vector3(-8.5f + 0.5f * p, 0.15f, 2.5f);
-
-        }
-
-        ///*********************************************** GENERATE WEAPON *****************************************************
-
-        CountOfWeapon = Random.Range(3, 12);
         this.transform.Find("WEAP&STUFF").GetComponent<WeapAndStuffPanel>().LenghtOfWeapons = CountOfWeapon;
-
-        for (int w = 1; w < CountOfWeapon; w++) {
-            GameObject W = Instantiate(Resources.Load("WeaponDoll")) as GameObject;
-            W.name = "W_" + w;
-            W.GetComponent<WeaponProperties>().Skin = Random.Range(1, 11);
-            W.GetComponent<WeaponProperties>().Condition = Random.Range(1, 11);
-            W.transform.SetParent(WeaponBack.transform);
-            W.transform.localPosition = WeaponBack.transform.GetChild(w - 1).transform.localPosition + new Vector3( 0, -0.08f, -0.2f);
-            W.transform.SetParent(WeaponBack.transform.Find("Weapons").transform);
-            GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
-            L.transform.SetParent(W.transform);
-            L.name = "Lighter";
-            L.transform.localPosition = new Vector3(0, 0, 0.1f);
-
-        }
-
-        ///*********************************************** GENERATE BULLETS *****************************************************
-
-        CountOfBullets = Random.Range(3, 12);
-
-        for (int b = 1; b < CountOfBullets; b++) {
-            GameObject B = Instantiate(Resources.Load("BulletsDoll")) as GameObject;
-            B.name = "B_" + b;
-            B.GetComponent<BulletsProperties>().Skin = Random.Range(1, 11);
-            B.GetComponent<BulletsProperties>().Count = Random.Range(1, 20);
-            B.transform.SetParent(WeaponBack.transform);
-            B.transform.localPosition = WeaponBack.transform.GetChild(b - 1).transform.localPosition + new Vector3(0, -0.08f, -0.2f);
-            B.transform.SetParent(WeaponBack.transform.Find("Bullets").transform);
-            GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
-            L.transform.SetParent(B.transform);
-            L.name = "Lighter";
-            L.transform.localPosition = new Vector3(0, 0, 0.1f);
-        }
-
-        ///*********************************************** GENERATE STUFF *****************************************************
-
-        CountOfStuff = Random.Range(3, 12);
-
-        for (int s = 1; s < CountOfStuff; s++) {
-            GameObject S = Instantiate(Resources.Load("OtherStuff")) as GameObject;
-            S.name = "S_" + s;
-            S.GetComponent<OtherStuff>().Skin = Random.Range(1, 4);
-            if (S.GetComponent<OtherStuff>().Skin == 2) {
-                S.GetComponent<OtherStuff>().IfNewWater = true;
-            }
-            S.transform.SetParent(WeaponBack.transform);
-            S.transform.localPosition = WeaponBack.transform.GetChild(s - 1).transform.localPosition + new Vector3(0, -0.08f, -0.2f);
-            S.transform.SetParent(WeaponBack.transform.Find("Stuff").transform);
-            GameObject L = Instantiate(Resources.Load("Lighter_01")) as GameObject;
-            L.transform.SetParent(S.transform);
-            L.name = "Lighter";
-            L.transform.localPosition = new Vector3(0, 0, 0.1f);
-        }
+        //this.transform.Find("")
 
         ///*********************************************** GENERATE NEW PLAYER INVENTORY *****************************************************
 
-        if (this.GetComponent<PlayerInventory>().Money == 0) {
-            this.GetComponent<PlayerInventory>().Money = Random.Range(600, 800) * 5;
-        }
         MoneyInfo.text = this.GetComponent<PlayerInventory>().Money.ToString();
         MenuHead.GetComponent<ButtonSwitcher>().Number = 1;
         WeaponBack.transform.Find("Weapons").gameObject.active = true;
@@ -436,17 +464,17 @@ public class WORK_Store : MonoBehaviour
             if (MenuHead.GetComponent<ButtonSwitcher>().Number == 1) {
                 MoneyInfo.text = this.GetComponent<PlayerInventory>().Money.ToString();
                 SLAVES.gameObject.active = true;
-                WEAPANDSTUFF.gameObject.active = false;
+                //WEAPANDSTUFF.gameObject.active = false;
                 INVENTORY.gameObject.active = false;
             }
+            //if (MenuHead.GetComponent<ButtonSwitcher>().Number == 2) {
+            //    SLAVES.gameObject.active = false;
+            //    WEAPANDSTUFF.gameObject.active = true;
+            //    INVENTORY.gameObject.active = false;
+            //}
             if (MenuHead.GetComponent<ButtonSwitcher>().Number == 2) {
                 SLAVES.gameObject.active = false;
-                WEAPANDSTUFF.gameObject.active = true;
-                INVENTORY.gameObject.active = false;
-            }
-            if (MenuHead.GetComponent<ButtonSwitcher>().Number == 3) {
-                SLAVES.gameObject.active = false;
-                WEAPANDSTUFF.gameObject.active = false;
+                //WEAPANDSTUFF.gameObject.active = false;
                 INVENTORY.gameObject.active = true;
                 ClearOldInventory();
                 ImportNewInventory();
@@ -469,18 +497,18 @@ public class WORK_Store : MonoBehaviour
                 isActiveSlave = hit.collider.gameObject;
                 isActiveSlave.GetComponent<SlaveProperties>().isActive = true;
                 isActiveSlave.GetComponent<AudioSource>().Play();
-                SLAVES.GetComponent<SlavesPanel>().Health.text = isActiveSlave.GetComponent<SlaveProperties>().Health.ToString();
-                SLAVES.GetComponent<SlavesPanel>().Damage.text = isActiveSlave.GetComponent<SlaveProperties>().Damage.ToString();
-                SLAVES.GetComponent<SlavesPanel>().Accuracy.text = isActiveSlave.GetComponent<SlaveProperties>().Accuracy.ToString();
-                SLAVES.GetComponent<SlavesPanel>().Level.text = isActiveSlave.GetComponent<SlaveProperties>().Level.ToString();
-                SLAVES.GetComponent<SlavesPanel>().Price.text = isActiveSlave.GetComponent<SlaveProperties>().Price.ToString();
+                //SLAVES.GetComponent<SlavesPanel>().Health.text = isActiveSlave.GetComponent<SlaveProperties>().Health.ToString();
+                //SLAVES.GetComponent<SlavesPanel>().Damage.text = isActiveSlave.GetComponent<SlaveProperties>().Damage.ToString();
+                //SLAVES.GetComponent<SlavesPanel>().Accuracy.text = isActiveSlave.GetComponent<SlaveProperties>().Accuracy.ToString();
+                //SLAVES.GetComponent<SlavesPanel>().Level.text = isActiveSlave.GetComponent<SlaveProperties>().Level.ToString();
+                //SLAVES.GetComponent<SlavesPanel>().Price.text = isActiveSlave.GetComponent<SlaveProperties>().Price.ToString();
 
                 int HealthGrade = Mathf.RoundToInt((isActiveSlave.GetComponent<SlaveProperties>().Health - 45.0f) / ((450.0f - 45.0f) / 4));
                 int DamageGrade = Mathf.RoundToInt((isActiveSlave.GetComponent<SlaveProperties>().Damage - 20.0f)/ ((100.0f - 20.0f) / 4));
                 int AccuracyGrade = Mathf.RoundToInt((isActiveSlave.GetComponent<SlaveProperties>().Accuracy - 3.0f)/ ((9.0f - 3.0f) / 4));
-                SLAVES.GetComponent<SlavesPanel>().HealthGrade = HealthGrade;
-                SLAVES.GetComponent<SlavesPanel>().DamageGrade = DamageGrade;
-                SLAVES.GetComponent<SlavesPanel>().AccuracyGrade = AccuracyGrade;
+                //SLAVES.GetComponent<SlavesPanel>().HealthGrade = HealthGrade;
+                //SLAVES.GetComponent<SlavesPanel>().DamageGrade = DamageGrade;
+                //SLAVES.GetComponent<SlavesPanel>().AccuracyGrade = AccuracyGrade;
 
                 if (this.GetComponent<PlayerInventory>().Money >= isActiveSlave.GetComponent<SlaveProperties>().Price) {
                     if (isActiveSlave.GetComponent<SlaveProperties>().Bought == false) {
@@ -729,6 +757,8 @@ public class WORK_Store : MonoBehaviour
                 PlayInv.Money -= isActiveSlave.GetComponent<SlaveProperties>().Price;
                 isActiveSlave.GetComponent<SlaveProperties>().Number = this.GetComponent<PlayerInventory>().Slaves;
 
+                Items.Remove(isActiveSlave.gameObject);
+
                 for (int s = 0; s < PlayInv.SlavePlace.Length; s++) {
                     if (PlayInv.SlavePlace[s] == null) {
                         PlayInv.SlavePlace[s] = isActiveSlave;
@@ -760,7 +790,7 @@ public class WORK_Store : MonoBehaviour
         if (BuyWeapStuffButton.GetComponent<ButtonSample>().isPressed == true) {
 
             ///************************************************* BUYING WEAPON ************************************************
-            
+
             if (Switcher.GetComponent<ButtonSwitcher>().Number == 1) {
                 if (this.GetComponent<PlayerInventory>().Weapons < 10) {
                     this.GetComponent<PlayerInventory>().Weapons += 1;
@@ -777,6 +807,8 @@ public class WORK_Store : MonoBehaviour
                         }
                         //wp += 1;
                     }
+
+                    Items.Remove(isActiveWeapon.gameObject);
 
                     isActiveWeapon.GetComponent<WeaponProperties>().isActive = false;
                     isActiveWeapon.transform.SetParent(WeapInvInfo.transform);
@@ -827,6 +859,9 @@ public class WORK_Store : MonoBehaviour
                 WeapInvInfo.active = true;
 
                 if (isActiveBullet.GetComponent<BulletsProperties>().Count == 0) {
+
+                    Items.Remove(isActiveBullet.gameObject);
+
                     Destroy(isActiveBullet.gameObject);
                 }
             }
@@ -847,6 +882,8 @@ public class WORK_Store : MonoBehaviour
                     isActiveStuff.transform.localPosition = Place.transform.localPosition;
                     isActiveStuff.transform.SetParent(StuffInvInfo.transform.Find("BoughtStuff").transform);
                     Place.active = false;
+
+                    Items.Remove(isActiveStuff.gameObject);
 
                     for (int sp = 0; sp < this.GetComponent<PlayerInventory>().StuffPlace.Length; sp++) {
                         if (this.GetComponent<PlayerInventory>().StuffPlace[sp] == null) {
@@ -913,5 +950,6 @@ public class WORK_Store : MonoBehaviour
                 BuyWeapStuffButton.GetComponent<ButtonSample>().isActive = false;
             }
         }
+
     }
 }

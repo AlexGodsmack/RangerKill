@@ -4,28 +4,29 @@ using UnityEngine;
 
 public class InventoryPanel : MonoBehaviour
 {
-
+    [Header("Anchors")]
     public GameObject Background;
     public GameObject AnchorCenter;
     public GameObject AnchorMidRight;
     public GameObject SlavesInv;
     public GameObject WeaponInv;
     public GameObject StuffInv;
-
+    [Header("Main Objects")]
     public GameObject HeadSwitcher;
     public GameObject PANELS;
-    public GameObject SLAVES;
-    public GameObject WEAPANDSTUFF;
+    public GameObject STORE;
+    //public GameObject WEAPANDSTUFF;
     public GameObject INVENTORY;
     public GameObject InvSwitcher;
-
+    public GameObject[] Indicators;
+    [Header("Active Objects")]
     public GameObject isActiveSlave;
     public GameObject isActiveWeapon;
     public GameObject isActiveStuff;
-
+    [Header("Heal/Repair")]
     public GameObject RepairButton;
     public GameObject HealButton;
-
+    [Header("Sounds")]
     public AudioSource TakeWeapon;
     public AudioSource AssignWeapon;
     public AudioSource PutSlave;
@@ -36,7 +37,7 @@ public class InventoryPanel : MonoBehaviour
     public AudioSource WaterPut;
     public AudioSource HealSlave;
     public AudioSource Select;
-
+    [Header("Text")]
     public GameObject InfoText;
 
     public PlayerInventory PlayInv;
@@ -73,6 +74,75 @@ public class InventoryPanel : MonoBehaviour
         RepairButton.gameObject.active = false;
         HealButton.GetComponent<ButtonSample>().isActive = false;
         HealButton.active = false;
+        ClearOldInventory();
+        ImportNewInventory();
+    }
+
+    void ClearOldInventory() {
+        for (int s = 0; s < INVENTORY.transform.Find("SlavesInv/Slaves").transform.childCount; s++) {
+            GameObject Pack = INVENTORY.transform.Find("SlavesInv/Slaves").GetChild(s).gameObject.GetComponent<SlaveProperties>().InventoryPack.gameObject;
+            Destroy(Pack);
+            Destroy(INVENTORY.transform.Find("SlavesInv/Slaves").GetChild(s).gameObject);
+        }
+        for (int w = 0; w < INVENTORY.transform.Find("WeaponInv/Weapons").transform.childCount; w++) {
+            Destroy(INVENTORY.transform.Find("WeaponInv/Weapons").GetChild(w).gameObject);
+        }
+        for (int s = 0; s < INVENTORY.transform.Find("StuffInv/Stuff").transform.childCount; s++) {
+            Destroy(INVENTORY.transform.Find("StuffInv/Stuff").GetChild(s).gameObject);
+        }
+    }
+
+    void ImportNewInventory() {
+
+        int SlavePlace = 0;
+        foreach (GameObject Slv in PlayInv.SlavePlace) {
+            if (Slv != null) {
+                GameObject Slave = Instantiate(Slv) as GameObject;
+                Slave.name = Slv.name;
+
+                SlaveProperties Prop = Slave.GetComponent<SlaveProperties>();
+                Prop.Bought = false;
+                Prop.isActive = false;
+                //Prop.ShowHealthbar = true;
+                Prop.Goal = INVENTORY.transform.Find("WeaponInv").transform.GetChild(5).gameObject;
+                Prop.SlaveXRef = Slv;
+
+                Slave.transform.position = INVENTORY.transform.Find("SlavesInv").transform.GetChild(SlavePlace).transform.position + new Vector3(0, 0, -0.2f);
+                Slave.transform.SetParent(INVENTORY.transform.Find("SlavesInv/Slaves").transform);
+
+                int ItemPlace = 0;
+            }
+            SlavePlace += 1;
+        }
+
+        int WeapPlace = 0;
+        foreach (GameObject Wpn in PlayInv.WeaponPlace) {
+            if (Wpn != null) {
+                GameObject Weap = Instantiate(Wpn) as GameObject;
+
+                Weap.transform.position = INVENTORY.transform.Find("WeaponInv").transform.GetChild(WeapPlace).transform.position + new Vector3(0, 0, -0.2f);
+                Weap.transform.SetParent(INVENTORY.transform.Find("WeaponInv/Weapons").transform);
+                Weap.GetComponent<WeaponProperties>().WeaponXRef = Wpn;
+                Weap.GetComponent<WeaponProperties>().Bought = false;
+                Weap.GetComponent<WeaponProperties>().isActive = false;
+            }
+            WeapPlace += 1;
+        }
+
+        int StuffPlace = 0;
+        foreach (GameObject Stff in PlayInv.StuffPlace) {
+            if (Stff != null) {
+                GameObject NewStff = Instantiate(Stff) as GameObject;
+
+                NewStff.transform.position = INVENTORY.transform.Find("StuffInv").transform.GetChild(StuffPlace).transform.position + new Vector3(0, 0, -0.2f);
+                NewStff.transform.SetParent(INVENTORY.transform.Find("StuffInv/Stuff").transform);
+                NewStff.GetComponent<OtherStuff>().StuffXRef = Stff;
+                NewStff.GetComponent<OtherStuff>().Bought = false;
+                NewStff.GetComponent<OtherStuff>().isActive = false;
+            }
+            StuffPlace += 1;
+        }
+
     }
 
     void OpenSlavesFields() {
@@ -142,20 +212,6 @@ public class InventoryPanel : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(0)) {
-            if (HeadSwitcher.GetComponent<ButtonSwitcher>().isPressed == true) {
-                PANELS.GetComponent<WORK_Store>().enabled = true;
-                this.GetComponent<InventoryPanel>().enabled = false;
-            }
-            if (HeadSwitcher.GetComponent<ButtonSwitcher>().Number == 1) {
-                SLAVES.gameObject.active = true;
-                WEAPANDSTUFF.gameObject.active = false;
-                INVENTORY.gameObject.active = false;
-            }
-            if (HeadSwitcher.GetComponent<ButtonSwitcher>().Number == 2) {
-                SLAVES.gameObject.active = false;
-                WEAPANDSTUFF.gameObject.active = true;
-                INVENTORY.gameObject.active = false;
-            }
 
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 
@@ -164,70 +220,63 @@ public class InventoryPanel : MonoBehaviour
             if (hit.collider.gameObject.layer == SlavesLayer) {
                 if (isActiveSlave != null) {
 
-                    if (isActiveStuff != null) {      // Обнуляю все выделенные шмотки в инвентаре
-                        isActiveStuff.GetComponent<OtherStuff>().isActive = false;
-                        isActiveStuff = null;
-                        CloseStuffField();
-                    }
+                    //if (isActiveStuff != null) {      // Обнуляю все выделенные шмотки в инвентаре
+                    //    isActiveStuff.GetComponent<OtherStuff>().isActive = false;
+                    //    isActiveStuff = null;
+                    //    CloseStuffField();
+                    //}
 
                     isActiveSlave.GetComponent<SlaveProperties>().isActive = false;
-                    isActiveSlave.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
+                    isActiveSlave = null;
+                    //isActiveSlave.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
                 }
 
                 isActiveSlave = hit.collider.gameObject;
+                SlaveProperties SlvProp = isActiveSlave.GetComponent<SlaveProperties>();
+                SlvProp.isActive = true;
 
-                int Number = isActiveSlave.GetComponent<SlaveProperties>().Number;
-                GameObject GetPack = isActiveSlave.GetComponent<SlaveProperties>().InventoryPack.gameObject;
+                int Number = SlvProp.Number;
+                GameObject GetPack = SlvProp.InventoryPack.gameObject;
 
                 if (isActiveWeapon != null) {
+                    WeaponProperties WpnProp = isActiveWeapon.GetComponent<WeaponProperties>();
+                    if (SlvProp.HaveGun == false && SlvProp.FullPackage == false) { // Если у раба нет пушки и его рюкзак не заполнен
+                        if (WpnProp.Bought == false) {          // Если оружие не лежит в чьем-то другом инвентаре
 
-                    if (isActiveSlave.GetComponent<SlaveProperties>().HaveGun == false && isActiveSlave.GetComponent<SlaveProperties>().FullPackage == false) { // Если у раба нет пушки и его рюкзак не заполнен
-
-                        if (isActiveWeapon.GetComponent<WeaponProperties>().Bought == false) {          // Если оружие не лежит в чьем-то другом инвентаре
-
-                            isActiveWeapon.GetComponent<WeaponProperties>().isActive = false;
-                            isActiveWeapon.GetComponent<WeaponProperties>().Bought = true;
+                            WpnProp.isActive = false;
+                            WpnProp.Bought = true;
                             AssignWeapon.Play();
-                            GameObject Ref = isActiveWeapon.GetComponent<WeaponProperties>().WeaponXRef.gameObject;
+                            GameObject Ref = WpnProp.WeaponXRef.gameObject;
 
                             foreach (SlavePackage Pack in PlayInv.SlavesBag) {
                                 if (Pack.NumberOfSlave == Number) {
                                     for (int a = 0; a < Pack.Place.Length; a++) {
                                         if (Pack.Place[a] == null) {
                                             Pack.Place[a] = Ref;
+                                            isActiveWeapon.transform.SetParent(GetPack.transform);
+                                            isActiveWeapon.transform.localPosition = GetPack.transform.GetChild(a).gameObject.transform.localPosition;
+                                            GetPack.transform.GetChild(a).gameObject.active = false;
                                             break;
                                         }
                                     }
                                 }
                             }
-                            for (int s = 0; s < PlayInv.WeaponPlace.Length; s++) {
-                                if (PlayInv.WeaponPlace[s] == Ref) {
-                                    PlayInv.WeaponPlace[s] = null;
-                                }
-                            }
-
-                            isActiveWeapon.transform.SetParent(GetPack.transform);
-                            GetPack.active = true;
-                            foreach (Transform Place in GetPack.transform) {
-                                if (Place.gameObject.active != false) {
-                                    isActiveWeapon.transform.localPosition = Place.transform.localPosition;
-                                    Place.gameObject.active = false;
-                                    break;
-                                }
-                            }
-                            //isActiveWeapon.transform.localPosition = GetPack.transform.GetChild(CheckPlace).transform.localPosition;
-                            //GetPack.transform.GetChild(CheckPlace).gameObject.active = false;
-                            isActiveSlave.GetComponent<SlaveProperties>().HaveGun = true;
+                            PlayInv.WeaponPlace[Ref.transform.GetSiblingIndex()] = null;
+                            //foreach (GameObject wpn in PlayInv.WeaponPlace) {
+                            //    if (wpn == Ref) {
+                            //    }
+                            //}
+                            SlvProp.HaveGun = true;
 
                             /// Update Power of Shot
 
-                            isActiveSlave.GetComponent<SlaveProperties>().WeaponXRef = isActiveWeapon;
-                            isActiveSlave.GetComponent<SlaveProperties>().SlaveXRef.gameObject.GetComponent<SlaveProperties>().WeaponXRef = isActiveWeapon.GetComponent<WeaponProperties>().WeaponXRef;
-                            isActiveSlave.GetComponent<SlaveProperties>().SlaveXRef.GetComponent<SlaveProperties>().HaveGun = true;
+                            SlvProp.WeaponXRef = isActiveWeapon;
+                            SlvProp.SlaveXRef.gameObject.GetComponent<SlaveProperties>().WeaponXRef = WpnProp.WeaponXRef;
+                            SlvProp.SlaveXRef.GetComponent<SlaveProperties>().HaveGun = true;
                         }
                     }
 
-                    isActiveWeapon.GetComponent<WeaponProperties>().isActive = false;
+                    //isActiveWeapon.GetComponent<WeaponProperties>().isActive = false;
                     isActiveWeapon = null;
                     CloseWeapFields();
 
@@ -458,7 +507,7 @@ public class InventoryPanel : MonoBehaviour
                                         isActiveWeapon.transform.SetParent(WeaponInv.transform.Find("Weapons").transform);
                                         isActiveWeapon.transform.position = Place.transform.position + new Vector3(0, 0, -0.2f);
                                         PlayInv.WeaponPlace[Place.transform.GetSiblingIndex()] = isActiveWeapon.GetComponent<WeaponProperties>().WeaponXRef;
-                                        Debug.Log(isActiveWeapon.name+ " " + isActiveWeapon.GetComponent<WeaponProperties>().WeaponXRef.name);
+                                        //Debug.Log(isActiveWeapon.name+ " " + isActiveWeapon.GetComponent<WeaponProperties>().WeaponXRef.name);
                                         break;
                                     }
                                 }
