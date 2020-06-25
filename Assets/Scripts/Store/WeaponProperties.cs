@@ -26,7 +26,7 @@ public class WeaponProperties : MonoBehaviour
     public Material Default;
     public Material Additive;
 
-    //public TextAsset Data;
+    public TextAsset Data;
 
     public GameObject WeaponXRef;
     public GameObject Lighter;
@@ -34,13 +34,14 @@ public class WeaponProperties : MonoBehaviour
     void Start()
     {
 
-        //string[] GetData = Data.text.Split('\n');
+        string[] GetData = Data.text.Split('\n');
 
-        //if (Skin != 0) {
-        //    WeapName = GetData[5 * (Skin - 1)];
-        //    Damage = int.Parse(GetData[5 * Skin - 4]);
-        //    Price = Condition * int.Parse(GetData[5 * Skin - 3]);
-        //}
+        if (WeapName == "") {
+            this.WeapName = GetData[3 * (this.Skin - 1)];
+            this.WeapName = this.WeapName.Substring(0, this.WeapName.Length - 1);
+            this.Damage = int.Parse(GetData[3 * this.Skin - 2]);
+            this.Price = this.Condition * int.Parse(GetData[3 * this.Skin - 1]);
+        }
 
     }
 
@@ -69,6 +70,7 @@ public class WeaponProperties : MonoBehaviour
         if (isActive == true) {
             if (Bought == false) {
                 Lighter.GetComponent<WeaponLighter>().Activate = true;
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             } else {
                 Lighter.GetComponent<WeaponLighter>().Activate = false;
                 this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
@@ -76,6 +78,7 @@ public class WeaponProperties : MonoBehaviour
         } else {
             if (Bought == false) {
                 Lighter.GetComponent<WeaponLighter>().Activate = false;
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             } else {
                 Lighter.GetComponent<WeaponLighter>().Activate = false;
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);

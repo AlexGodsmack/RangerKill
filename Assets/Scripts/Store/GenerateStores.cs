@@ -50,6 +50,12 @@ public class StorePoint {
         newItem.Accuracy = Random.Range(3, 10);
         newItem.Level = 1;
         newItem.Price = newItem.Health + newItem.Damage * newItem.Accuracy;
+        newItem.St_Health = newItem.FullHealth;
+        newItem.St_Damage = newItem.Damage;
+        newItem.St_Accuracy = newItem.Accuracy;
+        newItem.Heal_Units = 3;
+        newItem.Shot_Units = 5;
+        newItem.Rush_Units = 3;
 
         Lot1.Add(newItem);
     }
@@ -82,20 +88,25 @@ public class StorePoint {
         Lot3.Add(newItem);
     }
 
-    public void StuffRandomize() {
+    public void StuffRandomize(int Number) {
 
         StffLot newItem = new StffLot();
-
-        newItem.Skin = Random.Range(1, 4);
-        if (newItem.Skin == 1) {
-            newItem.Price = 200;
-        }
-        if (newItem.Skin == 2) {
+        if (Number == 0) {
+            newItem.Skin = 2;
             newItem.Price = 100;
             newItem.Liters = 100;
-        }
-        if (newItem.Skin == 3) {
-            newItem.Price = 150;
+        } else {
+            newItem.Skin = Random.Range(1, 4);
+            if (newItem.Skin == 1) {
+                newItem.Price = 200;
+            }
+            if (newItem.Skin == 2) {
+                newItem.Price = 100;
+                newItem.Liters = 100;
+            }
+            if (newItem.Skin == 3) {
+                newItem.Price = 150;
+            }
         }
         Lot4.Add(newItem);
     }
@@ -112,6 +123,14 @@ public class SlvLot {
     public int Damage;
     public int Accuracy;
     public int Level;
+    [Space]
+    public int St_Health;
+    public int St_Damage;
+    public int St_Accuracy;
+    public int Shot_Units;
+    public int Heal_Units;
+    public int Rush_Units;
+
 }
 
 [System.Serializable]

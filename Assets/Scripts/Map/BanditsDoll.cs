@@ -9,11 +9,13 @@ public class BanditsDoll : MonoBehaviour
     public int Coverage;
     public int Population;
     public int Number;
+    public int Attacks;
 
     public Collider2D[] Colliders;
     public Sprite[] Truman;
     public Sprite[] Knackers;
     public Sprite[] Horde;
+    public Sprite WaterTower;
 
     void Start()
     {
@@ -27,8 +29,18 @@ public class BanditsDoll : MonoBehaviour
         if (Clan == "Horde") {
             this.GetComponent<SpriteRenderer>().sprite = Horde[Coverage - 1];
         }
+        if (Clan == "Water Tower") {
+            this.GetComponent<SpriteRenderer>().sprite = WaterTower;
+        }
 
-        this.Colliders[Coverage - 1].enabled = true;
+        //if (Clan != "") {
+        //    //this.Colliders[Coverage - 1].enabled = true;
+        //} else {
+        //    this.GetComponent<SpriteRenderer>().sprite = Truman[Coverage - 1];
+        //    foreach (Collider2D col in this.Colliders) {
+        //        col.enabled = false;
+        //    }
+        //}
 
     }
 

@@ -43,6 +43,8 @@ public class BackGorund_Animation : MonoBehaviour
     public int CurrentFrame;
     public float StartRail;
     public float Position_1;
+    public float elapsed;
+    public int Timer = 0;
 
     [Header("Sounds")]
     public AudioSource BattlePanelSound;
@@ -57,49 +59,53 @@ public class BackGorund_Animation : MonoBehaviour
         //StartRail = 0.0f;
         //Background.transform.position = Pos1.transform.position;   
         CurrentFrame = Time.frameCount;
-        BattlePanelPos1 = TopCenter.transform.position + new Vector3(0, 0.6f, 0);
+        BattlePanelPos1 = TopCenter.transform.position + new Vector3(0, 3f, 0);
         BattlePanelPos2 = TopCenter.transform.position;
+        BattlePanel.transform.position = TopCenter.transform.position + new Vector3(0, 3f, 0);
     }
 
     void Update()
     {
-
-        if (Time.timeSinceLevelLoad < 3.0f) {
-            //FullTime += 0.01f;
-            Veil.GetComponent<SpriteRenderer>().color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), 2 * Time.timeSinceLevelLoad);
-            Veil2.GetComponent<SpriteRenderer>().color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), 2 * Time.timeSinceLevelLoad);
-            if (Time.frameCount - CurrentFrame == 3) {
-                VeilSound.Play();
-            }
-
-            if (Time.frameCount - CurrentFrame == 60) {
-                BattlePanelSound.Play();
-                StartRail = Time.timeSinceLevelLoad;
-                FirstStage = true;
-                Debug.Log("ready");
-            }
-            if (FirstStage == true) {
-                //StartRail += 0.005f;
-                Position_1 = 0.1f * (Time.timeSinceLevelLoad - StartRail);
-                Background.transform.position = Vector3.Lerp(Background.transform.position, Pos1.transform.position, Position_1);
-                Far.transform.position = Vector3.Lerp(Far.transform.position, FarGoal.transform.position, Position_1);
-                MiddleFar.transform.position = Vector3.Lerp(MiddleFar.transform.position, MidFarGoal.transform.position, Position_1);
-                MiddleCenter.transform.position = Vector3.Lerp(MiddleCenter.transform.position, MidCenterGoal.transform.position, Position_1);
-                MiddleNear.transform.position = Vector3.Lerp(MiddleNear.transform.position, MidNearGoal.transform.position, Position_1);
-                Near.transform.position = Vector3.Lerp(Near.transform.position, NearGoal.transform.position, Position_1);
-                BattlePanel.transform.position = Vector3.Lerp(BattlePanelPos1, BattlePanelPos2, 10 * Position_1);
-
-                if (Time.time >= 2.0f) {
+        if (Timer < 5) {
+            elapsed += Time.deltaTime;
+            if (elapsed >= 1f) {
+                Timer++;
+                if (Timer == 1) {
+                    BattlePanelSound.Play();
+                    StartRail = Time.timeSinceLevelLoad;
+                    FirstStage = true;
+                    //Debug.Log("ready");
+                }
+                if (Timer == 2) {
                     GetBattleWork.LetsStart = true;
                 }
+                elapsed = 0;
             }
+
+            if (Timer >= 0) {
+                Veil.GetComponent<SpriteRenderer>().color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), 2 * Time.timeSinceLevelLoad);
+                Veil2.GetComponent<SpriteRenderer>().color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), 2 * Time.timeSinceLevelLoad);
+                if (Time.frameCount - CurrentFrame == 3) {
+                    VeilSound.Play();
+                }
+
+                if (FirstStage == true) {
+                    Position_1 = 0.1f * (Time.timeSinceLevelLoad - StartRail);
+                    Background.transform.position = Vector3.Lerp(Background.transform.position, Pos1.transform.position, Position_1);
+                    Far.transform.position = Vector3.Lerp(Far.transform.position, FarGoal.transform.position, Position_1);
+                    MiddleFar.transform.position = Vector3.Lerp(MiddleFar.transform.position, MidFarGoal.transform.position, Position_1);
+                    MiddleCenter.transform.position = Vector3.Lerp(MiddleCenter.transform.position, MidCenterGoal.transform.position, Position_1);
+                    MiddleNear.transform.position = Vector3.Lerp(MiddleNear.transform.position, MidNearGoal.transform.position, Position_1);
+                    Near.transform.position = Vector3.Lerp(Near.transform.position, NearGoal.transform.position, Position_1);
+                    BattlePanel.transform.position = Vector3.Lerp(BattlePanelPos1, BattlePanelPos2, 10 * Position_1);
+                }
 
             //if (FullTime >= 0.6f) {
             //        SecondStage = true;
             //        //Position = 0.0f;
             //}
+            }
         }
-
     }
 }
 

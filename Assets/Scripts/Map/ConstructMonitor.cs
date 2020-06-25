@@ -4,27 +4,29 @@ using UnityEngine;
 
 public class ConstructMonitor : MonoBehaviour
 {
-
+    [Header("Anchors")]
     public GameObject LeftBottomAnchor;
     public GameObject LeftTopAnchor;
     public GameObject RightTopAnchor;
     public GameObject RightBottomAnchor;
-
+    [Header("Monitor Objects")]
     public GameObject LeftBottomMon;
     public GameObject LeftTopMon;
     public GameObject RightTopMon;
     public GameObject RightBottomMon;
-
+    [Space]
     public GameObject MidBottomMon;
     public GameObject MidRightMon;
     public GameObject MidLeftMon;
     public GameObject MidTopMon;
-
+    [Space]
     public GameObject Monitor;
     public GameObject Vignete;
     public GameObject MapPanelBack;
     public GameObject BattleMessageWindow;
     public GameObject BtlMsgShadow;
+    public GameObject WaterMessageWindow;
+    public GameObject WtrMsgShadow;
     public GameObject InfoField;
 
     void Start()
@@ -59,7 +61,9 @@ public class ConstructMonitor : MonoBehaviour
         InfoField.transform.localPosition = new Vector3(InfoField.transform.localPosition.x, InfoField.transform.localPosition.y, Monitor.transform.localPosition.z + 0.2f);
 
         BattleMessageWindow.transform.position = new Vector3 (MidTopMon.transform.position.x, MidLeftMon.transform.position.y, InfoField.transform.position.z + 0.1f);
+        WaterMessageWindow.transform.position = new Vector3 (MidTopMon.transform.position.x, MidLeftMon.transform.position.y, InfoField.transform.position.z + 0.1f);
         BtlMsgShadow.transform.localScale = new Vector3(MidTopMon.transform.localScale.x, MidLeftMon.transform.localScale.y, 1);
+        WtrMsgShadow.transform.localScale = new Vector3(MidTopMon.transform.localScale.x, MidLeftMon.transform.localScale.y, 1);
         BattleMessageWindow.active = false;
 
     }

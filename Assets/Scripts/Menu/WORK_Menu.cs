@@ -12,6 +12,7 @@ public class WORK_Menu : MonoBehaviour
     public Button Continue;
     public Button StartNewGame;
     public Button Quit;
+    public SaveLoadData Loader;
 
     void Start() {
         //public static GenerateStores Instance;
@@ -26,8 +27,7 @@ public class WORK_Menu : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/PlayerData.json");
         }
         GenerateMap();
-        PlayerDataChanger CreateNewPlayer = new PlayerDataChanger();
-        CreateNewPlayer.CreateNewPlayerData();
+        Loader.CreateNewPlayerData();
         SceneManager.LoadScene(1);
     }
 
@@ -38,7 +38,7 @@ public class WORK_Menu : MonoBehaviour
 
     void ContinueGame() {
         if (File.Exists(Application.persistentDataPath + "/MapData.json") && File.Exists(Application.persistentDataPath + "/PlayerData.json")) {
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(5);
         }
     }
 
@@ -149,12 +149,11 @@ public class WORK_Menu : MonoBehaviour
         }
     }
 
-    public Store CreateNewStore(MapData NewMapData, StoreStack StoresStack, string Type, int StoreID) {
+    public Store CreateNewStore(MapData NewMapData, StoreStack StoresStack, string Type, int StoreID, bool In_Radius) {
         if (Type == "Slaves") {
             int RandomCell = NewMapData.Tiles[Random.Range(0, NewMapData.GenerateIndexes.Columns * NewMapData.GenerateIndexes.Row - 1)].TileID;
 
             if (NewMapData.Tiles[RandomCell].Empty == true) {
-
                 MapTileSample Tile = NewMapData.Tiles[RandomCell];
 
                 Store newStore = new Store();
@@ -183,92 +182,166 @@ public class WORK_Menu : MonoBehaviour
         }
         if (Type == "Guns") {
             CreateInCircle newCirc = new CreateInCircle();
-            newCirc.TakeCell = NewMapData.GenerateIndexes.Stores[StoreID - 1].TileID;
-            newCirc.MapColumn = NewMapData.GenerateIndexes.Columns;
-            newCirc.MapRow = NewMapData.GenerateIndexes.Row;
-            newCirc.Radius = 3;
-            newCirc.GenerateCell();
-            //Debug.Log(newCirc.TargetCell);
-            if (NewMapData.Tiles[newCirc.TargetCell - 1].Empty == true) {
-                MapTileSample Tile = NewMapData.Tiles[newCirc.TargetCell - 1];
-                Store newStore = new Store();
-                StorePoint AddStore = new StorePoint();
-                newStore.TileID = Tile.TileID;
-                newStore.StoreID = StoreID;
-                newStore.Type = Type;
+            if (In_Radius == true) {
+                newCirc.TakeCell = NewMapData.GenerateIndexes.Stores[StoreID - 1].TileID;
+                newCirc.MapColumn = NewMapData.GenerateIndexes.Columns;
+                newCirc.MapRow = NewMapData.GenerateIndexes.Row;
+                newCirc.Radius = 2;
+                newCirc.GenerateCell();
+                //Debug.Log(newCirc.TargetCell);
+                if (NewMapData.Tiles[newCirc.TargetCell - 1].Empty == true) {
+                    MapTileSample Tile = NewMapData.Tiles[newCirc.TargetCell - 1];
+                    Store newStore = new Store();
+                    StorePoint AddStore = new StorePoint();
+                    newStore.TileID = Tile.TileID;
+                    newStore.StoreID = StoreID;
+                    newStore.Type = Type;
 
-                AddStore.TypeOfStore = newStore.Type;
-                AddStore.StoreID = newStore.StoreID;
-                AddStore.CountOfItem = Random.Range(10, 15);
-                for (int Wpn = 0; Wpn < AddStore.CountOfItem; Wpn++) {
-                    AddStore.WeaponRandomize();
+                    AddStore.TypeOfStore = newStore.Type;
+                    AddStore.StoreID = newStore.StoreID;
+                    AddStore.CountOfItem = Random.Range(10, 15);
+                    for (int Wpn = 0; Wpn < AddStore.CountOfItem; Wpn++) {
+                        AddStore.WeaponRandomize();
+                    }
+                    StoresStack.storePoint.Add(AddStore);
+
+                    Tile.Empty = false;
+                    return newStore;
+                } else {
+                    return null;
                 }
-                StoresStack.storePoint.Add(AddStore);
-
-                Tile.Empty = false;
-                return newStore;
             } else {
-                return null;
+                int RandCell = Random.Range(0, NewMapData.Tiles.Count);
+                if (NewMapData.Tiles[RandCell].Empty == true) {
+                    MapTileSample Tile = NewMapData.Tiles[RandCell];
+                    Store newStore = new Store();
+                    StorePoint AddStore = new StorePoint();
+                    newStore.TileID = Tile.TileID;
+                    newStore.StoreID = StoreID;
+                    newStore.Type = Type;
+
+                    AddStore.TypeOfStore = newStore.Type;
+                    AddStore.StoreID = newStore.StoreID;
+                    AddStore.CountOfItem = Random.Range(10, 15);
+                    for (int Wpn = 0; Wpn < AddStore.CountOfItem; Wpn++) {
+                        AddStore.WeaponRandomize();
+                    }
+                    StoresStack.storePoint.Add(AddStore);
+
+                    Tile.Empty = false;
+                    return newStore;
+                } else {
+                    return null;
+                }
             }
         }
         if (Type == "Bullets") {
-            CreateInCircle newCirc = new CreateInCircle();
-            newCirc.TakeCell = NewMapData.GenerateIndexes.Stores[StoreID - 1].TileID;
-            newCirc.MapColumn = NewMapData.GenerateIndexes.Columns;
-            newCirc.MapRow = NewMapData.GenerateIndexes.Row;
-            newCirc.Radius = 3;
-            newCirc.GenerateCell();
-            //Debug.Log(newCirc.TargetCell);
-            if (NewMapData.Tiles[newCirc.TargetCell - 1].Empty == true) {
-                MapTileSample Tile = NewMapData.Tiles[newCirc.TargetCell - 1];
-                Store newStore = new Store();
-                StorePoint AddStore = new StorePoint();
-                newStore.TileID = Tile.TileID;
-                newStore.StoreID = StoreID;
-                newStore.Type = Type;
+            if (In_Radius == true) {
+                CreateInCircle newCirc = new CreateInCircle();
+                newCirc.TakeCell = NewMapData.GenerateIndexes.Stores[StoreID - 1].TileID;
+                newCirc.MapColumn = NewMapData.GenerateIndexes.Columns;
+                newCirc.MapRow = NewMapData.GenerateIndexes.Row;
+                newCirc.Radius = 2;
+                newCirc.GenerateCell();
+                //Debug.Log(newCirc.TargetCell);
+                if (NewMapData.Tiles[newCirc.TargetCell - 1].Empty == true) {
+                    MapTileSample Tile = NewMapData.Tiles[newCirc.TargetCell - 1];
+                    Store newStore = new Store();
+                    StorePoint AddStore = new StorePoint();
+                    newStore.TileID = Tile.TileID;
+                    newStore.StoreID = StoreID;
+                    newStore.Type = Type;
 
-                AddStore.TypeOfStore = newStore.Type;
-                AddStore.StoreID = newStore.StoreID;
-                AddStore.CountOfItem = Random.Range(10, 15);
-                for (int Bul = 0; Bul < AddStore.CountOfItem; Bul++) {
-                    AddStore.BulletRandomize();
+                    AddStore.TypeOfStore = newStore.Type;
+                    AddStore.StoreID = newStore.StoreID;
+                    AddStore.CountOfItem = Random.Range(10, 15);
+                    for (int Bul = 0; Bul < AddStore.CountOfItem; Bul++) {
+                        AddStore.BulletRandomize();
+                    }
+                    StoresStack.storePoint.Add(AddStore);
+
+                    Tile.Empty = false;
+                    return newStore;
+                } else {
+                    return null;
                 }
-                StoresStack.storePoint.Add(AddStore);
-
-                Tile.Empty = false;
-                return newStore;
             } else {
-                return null;
+                int RandCell = Random.Range(0, NewMapData.Tiles.Count);
+                if (NewMapData.Tiles[RandCell].Empty == true) {
+                    MapTileSample Tile = NewMapData.Tiles[RandCell];
+                    Store newStore = new Store();
+                    StorePoint AddStore = new StorePoint();
+                    newStore.TileID = Tile.TileID;
+                    newStore.StoreID = StoreID;
+                    newStore.Type = Type;
+
+                    AddStore.TypeOfStore = newStore.Type;
+                    AddStore.StoreID = newStore.StoreID;
+                    AddStore.CountOfItem = Random.Range(10, 15);
+                    for (int Bul = 0; Bul < AddStore.CountOfItem; Bul++) {
+                        AddStore.BulletRandomize();
+                    }
+                    StoresStack.storePoint.Add(AddStore);
+
+                    Tile.Empty = false;
+                    return newStore;
+                } else {
+                    return null;
+                }
             }
         }
         if (Type == "Stuff") {
-            CreateInCircle newCirc = new CreateInCircle();
-            newCirc.TakeCell = NewMapData.GenerateIndexes.Stores[StoreID - 1].TileID;
-            newCirc.MapColumn = NewMapData.GenerateIndexes.Columns;
-            newCirc.MapRow = NewMapData.GenerateIndexes.Row;
-            newCirc.Radius = 3;
-            newCirc.GenerateCell();
-            //Debug.Log(newCirc.TargetCell);
-            if (NewMapData.Tiles[newCirc.TargetCell - 1].Empty == true) {
-                MapTileSample Tile = NewMapData.Tiles[newCirc.TargetCell - 1];
-                Store newStore = new Store();
-                StorePoint AddStore = new StorePoint();
-                newStore.TileID = Tile.TileID;
-                newStore.StoreID = StoreID;
-                newStore.Type = Type;
+            if (In_Radius == true) {
+                CreateInCircle newCirc = new CreateInCircle();
+                newCirc.TakeCell = NewMapData.GenerateIndexes.Stores[StoreID - 1].TileID;
+                newCirc.MapColumn = NewMapData.GenerateIndexes.Columns;
+                newCirc.MapRow = NewMapData.GenerateIndexes.Row;
+                newCirc.Radius = 2;
+                newCirc.GenerateCell();
+                if (NewMapData.Tiles[newCirc.TargetCell - 1].Empty == true) {
+                    MapTileSample Tile = NewMapData.Tiles[newCirc.TargetCell - 1];
+                    Store newStore = new Store();
+                    StorePoint AddStore = new StorePoint();
+                    newStore.TileID = Tile.TileID;
+                    newStore.StoreID = StoreID;
+                    newStore.Type = Type;
 
-                AddStore.TypeOfStore = newStore.Type;
-                AddStore.StoreID = newStore.StoreID;
-                AddStore.CountOfItem = Random.Range(10, 15);
-                for (int Stf = 0; Stf < AddStore.CountOfItem; Stf++) {
-                    AddStore.StuffRandomize();
+                    AddStore.TypeOfStore = newStore.Type;
+                    AddStore.StoreID = newStore.StoreID;
+                    AddStore.CountOfItem = Random.Range(10, 15);
+                    for (int Stf = 0; Stf < AddStore.CountOfItem; Stf++) {
+                        AddStore.StuffRandomize(Stf);
+                    }
+                    StoresStack.storePoint.Add(AddStore);
+
+                    Tile.Empty = false;
+                    return newStore;
+                } else {
+                    return null;
                 }
-                StoresStack.storePoint.Add(AddStore);
-
-                Tile.Empty = false;
-                return newStore;
             } else {
-                return null;
+                int RandCell = Random.Range(0, NewMapData.Tiles.Count);
+                if (NewMapData.Tiles[RandCell].Empty == true) {
+                    MapTileSample Tile = NewMapData.Tiles[RandCell];
+                    Store newStore = new Store();
+                    StorePoint AddStore = new StorePoint();
+                    newStore.TileID = Tile.TileID;
+                    newStore.StoreID = StoreID;
+                    newStore.Type = Type;
+
+                    AddStore.TypeOfStore = newStore.Type;
+                    AddStore.StoreID = newStore.StoreID;
+                    AddStore.CountOfItem = Random.Range(10, 15);
+                    for (int Stf = 0; Stf < AddStore.CountOfItem; Stf++) {
+                        AddStore.StuffRandomize(Stf);
+                    }
+                    StoresStack.storePoint.Add(AddStore);
+
+                    Tile.Empty = false;
+                    return newStore;
+                } else {
+                    return null;
+                }
             }
         }
         if (Type == "Recycling") {
@@ -278,7 +351,7 @@ public class WORK_Menu : MonoBehaviour
             //newCirc.MapRow = NewMapData.GenerateIndexes.Row;
             //newCirc.Radius = 3;
             //newCirc.GenerateCell();
-            int RandomCell = NewMapData.Tiles[Random.Range(0, NewMapData.GenerateIndexes.Columns * NewMapData.GenerateIndexes.Row - 1)].TileID;
+            int RandomCell = NewMapData.Tiles[Random.Range(0, NewMapData.Tiles.Count)].TileID;
 
             Debug.Log(RandomCell);
             if (NewMapData.Tiles[RandomCell].Empty == true) {
@@ -333,13 +406,12 @@ public class WORK_Menu : MonoBehaviour
             Ycoord -= 0.64f;
         }
 
-        int StoresNum = Random.Range(5, 10);
-        StoresNum = 10;
+        int StoresNum = 20;
         for (int s = 0; s < StoresNum; s++) {
             string Type = "";
             if (s == 0) {
                 Type = "Slaves";
-                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                 if (newstore != null) {
                     NewMapData.GenerateIndexes.Stores.Add(newstore);
                 } else {
@@ -347,8 +419,8 @@ public class WORK_Menu : MonoBehaviour
                 }
             }
             if (s == 1) {
-                Type = "Guns";
-                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                Type = "Stuff";
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, true);
                 if (newstore != null) {
                     NewMapData.GenerateIndexes.Stores.Add(newstore);
                 } else {
@@ -357,7 +429,7 @@ public class WORK_Menu : MonoBehaviour
             }
             if (s == 2) {
                 Type = "Bullets";
-                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, true);
                 if (newstore != null) {
                     NewMapData.GenerateIndexes.Stores.Add(newstore);
                 } else {
@@ -365,8 +437,8 @@ public class WORK_Menu : MonoBehaviour
                 }
             }
             if (s == 3) {
-                Type = "Stuff";
-                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                Type = "Guns";
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, true);
                 if (newstore != null) {
                     NewMapData.GenerateIndexes.Stores.Add(newstore);
                 } else {
@@ -375,18 +447,36 @@ public class WORK_Menu : MonoBehaviour
             }
             if (s == 4) {
                 Type = "Recycling";
-                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                 if (newstore != null) {
                     NewMapData.GenerateIndexes.Stores.Add(newstore);
                 } else {
                     s -= 1;
                 }
             }
-            if (s >= 5) {
+            if (s >= 5 && s < 10) {
+                Type = "Stuff";
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
+                if (newstore != null) {
+                    NewMapData.GenerateIndexes.Stores.Add(newstore);
+                } else {
+                    s -= 1;
+                }
+            }
+            if (s >= 10 && s < 15) {
+                Type = "Bullets";
+                Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
+                if (newstore != null) {
+                    NewMapData.GenerateIndexes.Stores.Add(newstore);
+                } else {
+                    s -= 1;
+                }
+            }
+            if (s >= 15) {
                 int randNum = Random.Range(1, 6);
                 if (randNum == 1) {
                     Type = "Slaves";
-                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                     if (newstore != null) {
                         NewMapData.GenerateIndexes.Stores.Add(newstore);
                     } else {
@@ -395,7 +485,7 @@ public class WORK_Menu : MonoBehaviour
                 }
                 if (randNum == 2) {
                     Type = "Guns";
-                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                     if (newstore != null) {
                         NewMapData.GenerateIndexes.Stores.Add(newstore);
                     } else {
@@ -404,7 +494,7 @@ public class WORK_Menu : MonoBehaviour
                 }
                 if (randNum == 3) {
                     Type = "Bullets";
-                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                     if (newstore != null) {
                         NewMapData.GenerateIndexes.Stores.Add(newstore);
                     } else {
@@ -413,7 +503,7 @@ public class WORK_Menu : MonoBehaviour
                 }
                 if (randNum == 4) {
                     Type = "Stuff";
-                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                     if (newstore != null) {
                         NewMapData.GenerateIndexes.Stores.Add(newstore);
                     } else {
@@ -422,7 +512,7 @@ public class WORK_Menu : MonoBehaviour
                 }
                 if (randNum == 5) {
                     Type = "Recycling";
-                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s);
+                    Store newstore = CreateNewStore(NewMapData, StoresStack, Type, s, false);
                     if (newstore != null) {
                         NewMapData.GenerateIndexes.Stores.Add(newstore);
                     } else {
@@ -440,6 +530,20 @@ public class WORK_Menu : MonoBehaviour
                 NewMapData.GenerateIndexes.Bandits.Add(NewBand);
             } else {
                 a -= 1;
+            }
+
+        }
+
+        for (int o = 0; o < 10; o++) {
+
+            int randPlace = Random.Range(0, NewMapData.Tiles.Count);
+            if (NewMapData.Tiles[randPlace].Empty == true) {
+                Obstacle newObst = new Obstacle();
+                newObst.Skin = Random.Range(1, 4);
+                newObst.Place = randPlace;
+                NewMapData.GenerateIndexes.Obstacles.Add(newObst);
+            } else {
+                o -= 1;
             }
 
         }
@@ -465,6 +569,7 @@ public class BanditArea {
     public int Coordinates;
     public int Population;
     public int NumberOfArea;
+    public int Attacks;
 }
 
 [System.Serializable]
@@ -481,7 +586,14 @@ public class MapIndexes {
     public int Row;
     public List<BanditArea> Bandits = new List<BanditArea>();
     public List<Store> Stores = new List<Store>();
+    public List<Obstacle> Obstacles = new List<Obstacle>();
     public Vector3 PlayerCoords;
+}
+
+[System.Serializable]
+public class Obstacle {
+    public int Skin;
+    public int Place;
 }
 
 [System.Serializable]

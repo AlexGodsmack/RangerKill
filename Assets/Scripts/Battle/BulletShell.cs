@@ -10,6 +10,9 @@ public class BulletShell : MonoBehaviour
     public float Timer;
     public bool Gotcha;
 
+    //private float elapsed;
+    //private int TimeCounter;
+
     void Start()
     {
 
@@ -22,7 +25,7 @@ public class BulletShell : MonoBehaviour
 
         if (Parent != null && Target != null) {
             this.transform.position = Vector3.Lerp(Parent.transform.position, Target.transform.position, Timer);
-            Timer += 0.3f;
+            Timer += 0.2f;
         }
 
         //if (Timer > 1.5f) {

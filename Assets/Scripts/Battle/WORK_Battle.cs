@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 
-public class WORK_Battle : MonoBehaviour
-{
+public class WORK_Battle : MonoBehaviour {
+    //=============== Значения в инспекторе ================
     [Header("Participants")]
     public List<GameObject> Slaves;
     public List<GameObject> Enemies;
+    [Space]
+    public List<GameObject> Loots;
 
     [Header("Scene's Objects")]
     public GameObject SlavesContainer;
@@ -17,34 +19,48 @@ public class WORK_Battle : MonoBehaviour
     [Space]
     public GameObject FinalPanel;
     public GameObject Rotor;
-    public GameObject Bullets;
+    //public GameObject Bullets;
     public GameObject InfoText;
     public GameObject LootContainer;
+    public GameObject LOOT;
     public GameObject GameOverContainer;
     public GameObject TakeLootButton;
     public GameObject GameOverButton;
+    public GameObject OverLoad;
     public GameObject BackToMap;
     public GameObject TuningTable;
     [Space]
     public GameObject Chain_1;
     public GameObject Chain_2;
+    [Space]
+    public ButtonSample SkipPass;
+    [Space]
+    public TextMesh[] Names;
 
     [Header("Current turn")]
     public GameObject SlaveCurrent;
     public GameObject EnemyCurrent;
+    public GameObject StuffCurrent;
     public GameObject ShellCurrent;
+    public SlaveProperties isActiveSlave;
+    public EnemyProperties isActiveEnemy;
+    public OtherStuff isActiveStuff;
     public GameObject Timer;
 
     [Header("Conditions")]
+    public string Clan;
+    public int TimeCounter = 12;
     public bool YourPass;
     public bool BattleIsOver;
-    public int TimeCounter;
     public bool LetsStart;
+    public bool Wait_A_Second;
+    public int Final_Power_of_Shot;
 
     [Header("Layers")]
     public int SlavesLayer = 8;
     public int EnemyLayer = 15;
     public int StuffLayer = 11;
+    public int ItemLayer = 18;
 
     [Header("Sounds")]
     public AudioSource Heal;
@@ -55,571 +71,736 @@ public class WORK_Battle : MonoBehaviour
     public AudioSource TakeMedicine;
     public AudioSource TakeBuff;
     public AudioSource PickMonitor;
+    public AudioSource SecondsSound;
+    public AudioSource Misfire;
 
     public GameObject PackContainer;
     private float Milsec;
 
-    void Start()
-    {
-        Bullets.active = false;
+    [Header("Classes")]
+    public MainPlayerControl PlayInv;
+    public SaveLoadData Loader;
+    public DataLoaderInBattle Enm_Data;
+
+    float elapsed = 0f;
+
+    //============================ На Старте ===============================
+
+    void Start() {
         YourPass = true;
         Milsec = 0.0f;
         Application.targetFrameRate = 60;
         TimeCounter = 12;
         GameOverContainer.active = false;
-        TuningTable.GetComponent<SpriteRenderer>().enabled = false;
-        GetStart();
+        //TuningTable.GetComponent<SpriteRenderer>().enabled = false;
         GenerateLoot();
-    }
-
-    void ShowSlavePack() {
-        InfoText.active = false;
-        SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = true;
-
-    }
-
-    void GetStart() {
-        if (SlaveCurrent != null) {
-            SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
-        }
-        InfoText.active = true;
-        InfoText.GetComponent<TextMesh>().text = "First - select slave\nSecond - select enemy\nor select stuff to use";
+        //foreach (GameObject slv in PlayInv.SlavePlace) {
+        //    slv.GetComponent<SlaveProperties>().ShowHealthbar = true;
+        //}
     }
 
     void EnemyPass() {
-        if (SlaveCurrent != null) {
-            SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
-        }
+        SkipPass.gameObject.active = false;
         InfoText.active = true;
         InfoText.GetComponent<TextMesh>().text = "Enemy's turn now";
     }
 
-    void ShowBullets() {
-        if (SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef != null) {
-            GameObject GetWeapon = SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef;
-            int GetBullets = GetWeapon.GetComponent<WeaponProperties>().Bullets;
-            Bullets.active = true;
-            GameObject BulContainer = Bullets.transform.Find("Bullets").gameObject;
+    void PlayerPass() {
+        SkipPass.gameObject.active = true;
+        SkipPass.isPressed = false;
+        SkipPass.isActive = true;
+        InfoText.active = false;
+    }
 
-            if (GetBullets < BulContainer.transform.childCount) {
-                foreach (Transform GetBul in BulContainer.transform) {
-                    if (GetBul.GetSiblingIndex() <= GetBullets - 1) {
-                        GetBul.gameObject.active = true;
-                    } else {
-                        GetBul.gameObject.active = false;
-                    }
-                }
-            } else {
-                foreach (Transform GetBul in Bullets.transform.Find("Bullets")) {
-                    GetBul.gameObject.active = true;
-                }
-            }
+    void Info_On_End_Battle(bool Condition) {
+        SkipPass.gameObject.active = false;
+        //InfoText.active = true;
+        if (Condition == false) {
+            InfoText.GetComponent<TextMesh>().text = "!!!You lose!!!";
+            GameOverContainer.active = true;
         } else {
-            Bullets.active = false;
+            InfoText.GetComponent<TextMesh>().text = "YOU WIN! TAKE A LOOT";
+            LootContainer.active = true;
         }
     }
 
-    void GenerateLoot() {
-        int RandomCount = Random.Range(1, 5);
-        for (int c = 0; c < RandomCount; c++) {
-            int randomKind = Random.Range(0, 2);
-            if (randomKind == 0) {
-                LootContainer.transform.GetChild(c).gameObject.active = true;
-                GameObject newStuff = Instantiate(Resources.Load("OtherStuff")) as GameObject;
-                newStuff.name = "Loot" + c;
-                newStuff.GetComponent<OtherStuff>().Bought = true;
-                newStuff.GetComponent<OtherStuff>().Skin = Random.Range(1, 5);
-                if (newStuff.GetComponent<OtherStuff>().Skin == 4) {
-                    newStuff.GetComponent<OtherStuff>().Price = Random.Range(150, 3500);
-                }
-                if (newStuff.GetComponent<OtherStuff>().Skin == 2) {
-                    newStuff.GetComponent<OtherStuff>().Liters = 100;
-                }
-                newStuff.transform.SetParent(LootContainer.transform);
-                newStuff.transform.position = LootContainer.transform.GetChild(c).transform.position;
-                newStuff.transform.SetParent(LootContainer.transform.Find("LOOT").gameObject.transform);
+    void Rename_Loot(GameObject Item, int c) {
+        if (Item.GetComponent<OtherStuff>() != null) {
+            OtherStuff ItemProp = Item.GetComponent<OtherStuff>();
+            Names[c].text = ItemProp.Name;
+            if (ItemProp.Skin == 2) {
+                Names[c].text += "\nLiters: " + ItemProp.Liters.ToString();
             }
-            if (randomKind == 1) {
-                LootContainer.transform.GetChild(c).gameObject.active = true;
-                GameObject newWeapon = Instantiate(Resources.Load("WeaponDoll")) as GameObject;
-                newWeapon.name = "Loot" + c;
-                newWeapon.GetComponent<WeaponProperties>().Skin = Random.Range(1, 11);
-                newWeapon.GetComponent<WeaponProperties>().Bought = true;
-                newWeapon.GetComponent<WeaponProperties>().Condition = Random.Range(1, 11);
-                newWeapon.transform.SetParent(LootContainer.transform);
-                newWeapon.transform.position = LootContainer.transform.GetChild(c).transform.position;
-                newWeapon.transform.SetParent(LootContainer.transform.Find("LOOT").gameObject.transform);
+            if (ItemProp.Skin == 4) {
+                Names[c].text += "\n" + ItemProp.Price.ToString() + " $";
+            }
+        } else if (Item.GetComponent<WeaponProperties>() != null) {
+            WeaponProperties ItemProp = Item.GetComponent<WeaponProperties>();
+            Names[c].text = ItemProp.WeapName;
+            Names[c].text += "\nCondition: " + ItemProp.Condition;
+        }
+        Loots.Add(Item);
+    }
+
+    //=================================== Показываю количество пуль в индикаторе =======================================
+
+    //void ShowBullets() {
+    //    if (SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef != null) {
+    //        GameObject GetWeapon = SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef;
+    //        int GetBullets = GetWeapon.GetComponent<WeaponProperties>().Bullets;
+    //        Bullets.active = true;
+    //        GameObject BulContainer = Bullets.transform.Find("Bullets").gameObject;
+
+    //        if (GetBullets < BulContainer.transform.childCount) {
+    //            foreach (Transform GetBul in BulContainer.transform) {
+    //                if (GetBul.GetSiblingIndex() <= GetBullets - 1) {
+    //                    GetBul.gameObject.active = true;
+    //                } else {
+    //                    GetBul.gameObject.active = false;
+    //                }
+    //            }
+    //        } else {
+    //            foreach (Transform GetBul in Bullets.transform.Find("Bullets")) {
+    //                GetBul.gameObject.active = true;
+    //            }
+    //        }
+    //    } else {
+    //        Bullets.active = false;
+    //    }
+    //}
+
+    //===================================== Генерирую луты =========================================
+
+    void GenerateLoot() {
+        LootContainer.active = true;
+        for (int c = 0; c < 4; c++) {
+            //=================== Если клан ТРУМАНА, то больше генерируется денег ====================
+            if (Clan == "Trumans'") {
+                int RandomItem = Random.Range(1, 11);
+                if (RandomItem == 3) {
+
+                    Create_Stuff(c);
+
+                } else if (RandomItem == 6) {
+
+                    Create_Weapon(c);
+
+                } else {
+
+                    Create_Money(c);
+
+                }
+            }
+            //=================== Если клан СКОТОДЕРОВ, то больше генерируется оружия ====================
+            if (Clan == "Knackers") {
+                int RandomItem = Random.Range(1, 11);
+                if (RandomItem == 3) {
+
+                    Create_Money(c);
+
+                } else if (RandomItem == 6) {
+
+                    Create_Stuff(c);
+
+                } else {
+
+                    Create_Weapon(c);
+
+                }
+            }
+            //=================== Если клан ОРДЫ, то больше генерируется шмоток ====================
+            if (Clan == "Horde") {
+                int RandomItem = Random.Range(1, 11);
+                if (RandomItem == 3) {
+
+                    Create_Weapon(c);
+
+                } else if (RandomItem == 6) {
+
+                    Create_Money(c);
+
+                } else {
+
+                    Create_Stuff(c);
+
+                }
+            }
+            //=================== Если клан НЕИЗВЕСТЕН, то генерируется все что угодно ====================
+            if (Clan == "Unknown") {
+                int RandomItem = Random.Range(0, 3);
+                if (RandomItem == 0) {
+                    Create_Stuff(c);
+                } else if (RandomItem == 1) {
+                    Create_Money(c);
+                } else if (RandomItem == 2) {
+                    Create_Weapon(c);
+                }
             }
         }
         LootContainer.active = false;
     }
 
-    void ShowDescriptions() {
-        LootContainer.active = true;
-        for (int d = 0; d < LootContainer.transform.Find("LOOT").transform.childCount; d++) {
-            GameObject GetDescription = LootContainer.transform.GetChild(d).transform.GetChild(0).gameObject;
-            if (LootContainer.transform.Find("LOOT").GetChild(d).GetComponent<OtherStuff>() != null) {
+    void Create_Weapon(int c) {
+        //LootContainer.transform.GetChild(c).gameObject.active = true;
+        GameObject newWeapon = Instantiate(Resources.Load("WeaponDoll")) as GameObject;
+        WeaponProperties getWpn = newWeapon.GetComponent<WeaponProperties>();
+        newWeapon.name = c.ToString();
+        getWpn.Skin = Random.Range(1, 11);
+        getWpn.Bought = true;
+        getWpn.Condition = Random.Range(5, 11);
+        newWeapon.transform.SetParent(LootContainer.transform);
+        newWeapon.transform.position = LootContainer.transform.GetChild(c).transform.position;
+        newWeapon.transform.SetParent(LOOT.transform);
+    }
 
-                GameObject GetStuff = LootContainer.transform.Find("LOOT").GetChild(d).gameObject;
-                int GetSkin = GetStuff.GetComponent<OtherStuff>().Skin;
-                string[] GetDescrit = GetStuff.GetComponent<OtherStuff>().ShortDescription.Split('.');
-                string GetName = GetDescrit[0];
-                string GetPrice = GetStuff.GetComponent<OtherStuff>().Price.ToString();
-                string GetLiters = GetStuff.GetComponent<OtherStuff>().Liters.ToString();
+    void Create_Stuff(int c) {
+        //LootContainer.transform.GetChild(c).gameObject.active = true;
+        GameObject newStuff = Instantiate(Resources.Load("OtherStuff")) as GameObject;
+        OtherStuff GetStf = newStuff.GetComponent<OtherStuff>();
+        newStuff.name = c.ToString();
+        GetStf.Bought = true;
+        GetStf.Skin = Random.Range(1, 4);
 
-                if (GetSkin == 4) {
-                    GetDescription.GetComponent<TextMesh>().text = GetName + "\n" + GetPrice;
-                } else if (GetSkin == 2) {
-                    GetDescription.GetComponent<TextMesh>().text = GetName + "\nLiters: " + GetLiters;
-                } else {
-                    GetDescription.GetComponent<TextMesh>().text = GetName;
-                }
-            }
-            if (LootContainer.transform.Find("LOOT").GetChild(d).GetComponent<WeaponProperties>() != null) {
-                string GetName = LootContainer.transform.Find("LOOT").GetChild(d).GetComponent<WeaponProperties>().WeapName;
-                string GetCond = LootContainer.transform.Find("LOOT").GetChild(d).GetComponent<WeaponProperties>().Condition.ToString();
-                GetDescription.GetComponent<TextMesh>().text = GetName + "\nCondition: " + GetCond;
-            }
+        if (GetStf.Skin == 1) {
+            GetStf.Price = 200;
         }
+        if (GetStf.Skin == 2) {
+            GetStf.Liters = 100;
+            GetStf.Price = 100;
+        }
+        if (GetStf.Skin == 3) {
+            GetStf.Price = 150;
+        }
+        newStuff.transform.SetParent(LootContainer.transform);
+        newStuff.transform.position = LootContainer.transform.GetChild(c).transform.position;
+        newStuff.transform.SetParent(LOOT.transform);
     }
 
-    void ShowFailBattle() {
-        GameOverContainer.active = true;
+    void Create_Money(int c) {
+        GameObject newStuff = Instantiate(Resources.Load("OtherStuff")) as GameObject;
+        OtherStuff GetStf = newStuff.GetComponent<OtherStuff>();
+        newStuff.name = c.ToString();
+        GetStf.Name = "Money";
+        GetStf.Bought = true;
+        GetStf.Skin = 4;
+        GetStf.Price = Random.Range(15, 300);
+        newStuff.transform.SetParent(LootContainer.transform);
+        newStuff.transform.position = LootContainer.transform.GetChild(c).transform.position;
+        newStuff.transform.SetParent(LOOT.transform);
     }
 
+    //================================ Активировал тряску камеры =====================================
     void ActivateShakes() {
         Chain_1.GetComponent<Animator>().SetBool("Activated", true);
         Chain_2.GetComponent<Animator>().SetBool("Activated", true);
         this.GetComponent<ShakeCamera>().Activated = true;
     }
 
-    void UpdateInventoryCounts() {
-        int slaves = 0;
-        int weapons = 0;
-        int stuff = 0;
-        foreach (GameObject Slv in this.GetComponent<PlayerInventory>().SlavePlace) {
-            if (Slv != null) {
-                slaves += 1;
-            }
+    void Nullify_Timer() {
+        TimeCounter = 12;
+        foreach (Transform sec in Timer.transform) {
+            sec.gameObject.active = true;
         }
-        foreach (GameObject Wpn in this.GetComponent<PlayerInventory>().WeaponPlace) {
-            if (Wpn != null) {
-                weapons += 1;
-            }
+        if (isActiveEnemy != null) {
+            isActiveEnemy.isActive = false;
         }
-        foreach (GameObject Stff in this.GetComponent<PlayerInventory>().StuffPlace) {
-            if (Stff != null) {
-                stuff += 1;
-            }
+        if (isActiveSlave != null) {
+            isActiveSlave.isActive = false;
         }
-        foreach (SlavePackage Pack in this.GetComponent<PlayerInventory>().SlavesBag) {
-            foreach (GameObject Stuff in Pack.Place) {
-                if (Stuff != null) {
-                    if (Stuff.GetComponent<WeaponProperties>() != null) {
-                        weapons += 1;
-                    }
-                    if (Stuff.GetComponent<OtherStuff>() != null) {
-                        stuff += 1;
-                    }
-                }
-            }
+        if (isActiveStuff != null) {
+            isActiveStuff.isActive = false;
         }
-
-        this.GetComponent<PlayerInventory>().Slaves = slaves;
-        this.GetComponent<PlayerInventory>().Weapons = weapons;
-        this.GetComponent<PlayerInventory>().Stuff = stuff;
+        isActiveSlave = null;
+        isActiveEnemy = null;
+        isActiveStuff = null;
+        SlaveCurrent = null;
+        EnemyCurrent = null;
+        StuffCurrent = null;
     }
 
-    void Update()
-    {
+    void Shot_Timer_Minus() {
+        int CurrentTime = TimeCounter;
+        while (TimeCounter > CurrentTime - 5) {
+            Timer.transform.GetChild(TimeCounter - 1).gameObject.active = false;
+            TimeCounter--;
+            SecondsSound.Play();
+        }
+    }
 
+    void Heal_Timer_Minus() {
+        int CurrentTime = TimeCounter;
+        while (TimeCounter > CurrentTime - 3) {
+            Timer.transform.GetChild(TimeCounter - 1).gameObject.active = false;
+            TimeCounter--;
+            SecondsSound.Play();
+        }
+    }
+
+    void Update() {
+
+        //================================ Начало гринда =====================================
         if (LetsStart == true) {
             if (YourPass == true && BattleIsOver == false) {
 
-                if (TimeCounter < 0) {
-                    TimeCounter = 12;
-                }
+                //elapsed += Time.deltaTime;
+                //if (elapsed >= 1f) {
+                //    TimeCounter -= 1;
+                //    SecondsSound.Play();
+                //    Debug.Log(Timer.transform.GetChild(TimeCounter).gameObject.name); 
+                //    Timer.transform.GetChild(TimeCounter).gameObject.active = false;
+                //    elapsed = 0;
+                //}
 
-                Milsec += 1f / 60f;
-                if (Milsec >= 1.0f) {
-                    TimeCounter -= 1;
-                    if (TimeCounter >= 0) {
-                        Timer.transform.GetChild(TimeCounter).gameObject.active = false;
-                    } else {
-                        if (SlaveCurrent != null) {
-                            SlaveCurrent.GetComponent<SlaveProperties>().isActive = false;
-                            SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
-                            EnemyPass();
-                        }
-                        EnemyCurrent = Enemies[Random.Range(0, Enemies.Count)].gameObject;
-                        SlaveCurrent = Slaves[Random.Range(0, Slaves.Count)].gameObject;
-                        Milsec = 0.0f;
-                        YourPass = false;
-                    }
-                    Milsec = 0.0f;
-                }
+                //if (TimeCounter <= 0) {
+                //    Nullify_Timer();
+                //    EnemyPass();
+                //    YourPass = false;
+                //}
 
                 if (Input.GetMouseButtonDown(0)) {
 
                     RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                     if (hit.collider.gameObject.layer == SlavesLayer) {
-                        if (SlaveCurrent != null) {
-                            SlaveCurrent.GetComponent<SlaveProperties>().isActive = false;
-                            SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
-                        }
-                        SlaveCurrent = hit.collider.gameObject;
-                        SlaveCurrent.GetComponent<SlaveProperties>().isActive = true;
-                        SlaveCurrent.GetComponent<AudioSource>().Play();
-                        SlaveCurrent.GetComponent<SlaveProperties>().gameObject.active = true;
-
-                        ShowBullets();
-
-                        ShowSlavePack();
-
-                    }
-
-                    if (hit.collider.gameObject.layer == StuffLayer) {
-                        GameObject GetStuff = hit.collider.gameObject;
-                        if (GetStuff.GetComponent<OtherStuff>().Skin != 2) {
-
-                            GameObject GetPack = GetStuff.transform.parent.gameObject;
-                            GameObject GetPlace = GetPack.transform.GetChild(GetStuff.transform.GetSiblingIndex() - 4).gameObject;
-
-                            int numstff = 0;
-                            if (SlaveCurrent.GetComponent<SlaveProperties>().Health != SlaveCurrent.GetComponent<SlaveProperties>().FullHealth) {
-                                if (GetStuff.GetComponent<OtherStuff>().Skin == 1) {
-                                    Destroy(GetStuff);
-                                    SlaveCurrent.GetComponent<SlaveProperties>().Health = SlaveCurrent.GetComponent<SlaveProperties>().FullHealth;
-                                    Heal.Play();
-                                    GetPlace.active = true;
-                                }
-                            }
-                            if (GetStuff.GetComponent<OtherStuff>().Skin == 3) {
-                                Destroy(GetStuff);
-                                SlaveCurrent.GetComponent<SlaveProperties>().IN_RUSH = true;
-                                Fury.Play();
-                                GetPlace.active = true;
-                            }
-                        }
-                    }
-
-                    if (hit.collider.gameObject.layer == EnemyLayer) {
-                        if (SlaveCurrent != null) {
-                            if (SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef != null) {
-
-                                GameObject GetWeapon = SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef;
-                                SlaveCurrent.GetComponent<SlaveProperties>().IN_RUSH = false;
-
-                                if (GetWeapon.GetComponent<WeaponProperties>().Bullets > 0) {
-                                    GetWeapon.GetComponent<WeaponProperties>().Bullets -= 1;
-                                    ShowBullets();
-
-                                    SlaveCurrent.GetComponent<Animator>().SetBool("Fire", true);
-
-                                    EnemyCurrent = hit.collider.gameObject;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (SlaveCurrent != null) {
-                    if (SlaveCurrent.GetComponent<SlaveProperties>().ShellContainer != null) {
                         if (EnemyCurrent != null) {
-                            ShellCurrent = SlaveCurrent.GetComponent<SlaveProperties>().ShellContainer;
-                            ShellCurrent.GetComponent<BulletShell>().Target = EnemyCurrent;
-                            if (ShellCurrent.GetComponent<BulletShell>().Gotcha == true) {
-
-                                if (SlaveCurrent.GetComponent<SlaveProperties>().WeaponSkin == 9) {
-                                    ActivateShakes();
+                            isActiveEnemy.isActive = false;
+                            isActiveEnemy = null;
+                            EnemyCurrent = null;
+                        }
+                        if (isActiveSlave != null) {
+                            if (isActiveSlave == hit.collider.gameObject.GetComponent<SlaveProperties>()) {
+                                isActiveSlave.isActive = false;
+                                SlaveCurrent = null;
+                                isActiveSlave = null;
+                            } else {
+                                isActiveSlave.isActive = false;
+                                isActiveSlave = hit.collider.gameObject.GetComponent<SlaveProperties>();
+                                SlaveCurrent = hit.collider.gameObject;
+                                isActiveSlave.isActive = true;
+                            }
+                        } else {
+                            isActiveSlave = hit.collider.gameObject.GetComponent<SlaveProperties>();
+                            SlaveCurrent = hit.collider.gameObject;
+                            isActiveSlave.isActive = true;
+                        }
+                    }
+                    if (hit.collider.gameObject.layer == ItemLayer) {
+                        if (hit.collider.gameObject.layer == ItemLayer) {
+                            if (isActiveStuff != null) {
+                                if (isActiveStuff.GetComponent<OtherStuff>() != null) {
+                                    isActiveStuff.isActive = false;
+                                    SlaveCurrent = null;
+                                    isActiveStuff = null;
                                 }
-                                if (SlaveCurrent.GetComponent<SlaveProperties>().WeaponSkin == 10) {
-                                    ActivateShakes();
-                                }
-
-                                Destroy(ShellCurrent);
-
-                                int GetPower = (int)SlaveCurrent.GetComponent<SlaveProperties>().PowerOfShot;
-                                EnemyCurrent.GetComponent<EnemyProperties>().Damaged();
-                                EnemyCurrent.GetComponent<EnemyProperties>().Health -= GetPower;
-                                SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject.active = false;
-                                SlaveCurrent.GetComponent<SlaveProperties>().isActive = false;
-                                if (EnemyCurrent.GetComponent<EnemyProperties>().Health <= 0) {
-                                    EnemyCurrent.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-                                    Enemies.Remove(EnemyCurrent);
-                                    //Destroy(EnemyCurrent.gameObject);
-                                    EnemyCurrent.transform.SetParent(Trash.transform);
-                                    EnemyCurrent.GetComponent<Animator>().SetBool("Dead", true);
-                                    if (Enemies.Count == 0) {
-                                        Milsec = 0.0f;
-                                        BattleIsOver = true;
-                                    } else {
-                                        EnemyCurrent = Enemies[Random.Range(0, Enemies.Count)].gameObject;
-                                        SlaveCurrent = Slaves[Random.Range(0, Slaves.Count)].gameObject;
+                            }
+                        }
+                        if (hit.collider.gameObject.GetComponent<OtherStuff>() != null) {
+                            isActiveStuff = hit.collider.gameObject.GetComponent<OtherStuff>();
+                            StuffCurrent = hit.collider.gameObject;
+                            isActiveStuff.isActive = true;
+                            if (isActiveSlave.Health != isActiveSlave.FullHealth) {
+                                if (isActiveStuff.Skin == 1) {
+                                    if (TimeCounter >= 3) {
+                                        Heal_Timer_Minus();
+                                        Heal.Play();
+                                        isActiveSlave.Health = isActiveSlave.FullHealth;
+                                        Destroy(StuffCurrent);
                                     }
                                 }
-
-
-                                EnemyPass();
-                                Timer.active = false;
-                                TimeCounter = -1;
-                                YourPass = false;
+                            }
+                        }
+                    }
+                    if (hit.collider.gameObject.layer == EnemyLayer) {
+                        if (SlaveCurrent != null && isActiveSlave != null) {
+                            isActiveEnemy = hit.collider.gameObject.GetComponent<EnemyProperties>();
+                            EnemyCurrent = hit.collider.gameObject;
+                            if (TimeCounter >= 5) {
+                                if (isActiveSlave.WeaponXRef != null) {
+                                    WeaponProperties SlvWeapon = isActiveSlave.WeaponXRef.gameObject.GetComponent<WeaponProperties>();
+                                    if (SlvWeapon.Bullets != 0) {
+                                        if (isActiveSlave != null) {
+                                            Wait_A_Second = true;
+                                            isActiveSlave.isActive = false;
+                                            if (Wait_A_Second == true) {
+                                                isActiveSlave.OnFire();
+                                                Wait_A_Second = false;
+                                                Final_Power_of_Shot = (int)isActiveSlave.PowerOfShot + Random.Range(-30, 30);
+                                                SlvWeapon.Bullets--;
+                                            }
+                                            Shot_Timer_Minus();
+                                        }
+                                    } else {
+                                        Misfire.Play();
+                                    }
+                                }
+                            }
+                        } else {
+                            if (isActiveEnemy != null) {
+                                if (EnemyCurrent == hit.collider.gameObject) {
+                                    isActiveEnemy.isActive = false;
+                                    isActiveEnemy = null;
+                                    EnemyCurrent = null;
+                                } else {
+                                    isActiveEnemy.isActive = false;
+                                    isActiveEnemy = null;
+                                    EnemyCurrent = null;
+                                    isActiveEnemy = hit.collider.gameObject.GetComponent<EnemyProperties>();
+                                    EnemyCurrent = hit.collider.gameObject;
+                                    isActiveEnemy.isActive = true;
+                                }
+                            } else {
+                                isActiveEnemy = hit.collider.gameObject.GetComponent<EnemyProperties>();
+                                EnemyCurrent = hit.collider.gameObject;
+                                isActiveEnemy.isActive = true;
                             }
                         }
                     }
                 }
-            } else if (YourPass == false && BattleIsOver == false){
 
-                if (TimeCounter < 0) {
-                    TimeCounter = 4;
-                }
 
-                Milsec += 1f / 60f;
-                if (Milsec >= 1.0f) {
-                    TimeCounter -= 1;
-                    Milsec = 0.0f;
-                }
+                //============================================ Ход врага ===============================================
+            } else if (YourPass == false && BattleIsOver == false) {
 
-                if (TimeCounter == 2) {
-                    //if (EnemyCurrent != null) {
-                    //    EnemyCurrent.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-                    //}
+                //if (TimeCounter <= 2) {
 
-                    Bullets.active = false;
-                    EnemyCurrent.GetComponent<Animator>().SetBool("Fire", true);
+                //}
+                if (Wait_A_Second == false) {
+
+                    elapsed += Time.deltaTime;
+
+                    if (EnemyCurrent != null) {
+                        isActiveEnemy.isActive = false;
+                        isActiveEnemy = null;
+                        EnemyCurrent = null;
+                    }
+                    if (SlaveCurrent != null) {
+                        isActiveSlave = null;
+                        SlaveCurrent = null;
+                    }
+
+                    if (elapsed >= 1f) {
+                        SecondsSound.Play();
+
+                        Wait_A_Second = true;
+
+                        int randEnm = Random.Range(0, Enemies.Count);
+                        EnemyCurrent = Enemies[randEnm].gameObject;
+                        isActiveEnemy = EnemyCurrent.GetComponent<EnemyProperties>();
+                        isActiveEnemy.isActive = true;
+
+
+
+                        //int rand = Random.Range(0, 2);
+                        //if (rand == 0) {
+                        //    if (TimeCounter >= 3) {
+
+                        //            isActiveEnemy.isActive = false;
+                        //            isActiveEnemy = null;
+                        //            EnemyCurrent = null;
+                        //            Wait_A_Second = false;
+                        //        }
+                        //    } else {
+                        //        TimeCounter = 2;
+                        //    }
+                        //} else if (rand == 1) {
+                        //}
+                        if (TimeCounter >= 5) {
+
+                            int randSlv = Random.Range(0, Slaves.Count);
+                            SlaveCurrent = Slaves[randSlv].gameObject;
+                            isActiveSlave = SlaveCurrent.GetComponent<SlaveProperties>();
+                            isActiveEnemy.OnFire();
+                            Final_Power_of_Shot = isActiveEnemy.PowerOfShot + Random.Range(-30, 30);
+                            Shot_Timer_Minus();
+
+                        } else if (TimeCounter >= 3) {
+                            if (isActiveEnemy.Health != isActiveEnemy.FullHealth) {
+
+                                isActiveEnemy.Health = isActiveEnemy.FullHealth;
+                                Heal_Timer_Minus();
+                                Heal.Play();
+                                Wait_A_Second = false;
+
+                            }
+                        } else if (TimeCounter <= 2) {
+                            PlayerPass();
+                            YourPass = true;
+                            Nullify_Timer();
+                        }
+                        elapsed = 0;
+                    }
                 }
 
                 if (EnemyCurrent != null) {
-                    if (SlaveCurrent != null) {
-                        if (EnemyCurrent.GetComponent<EnemyProperties>().ShellContainer != null) {
-
-                            ShellCurrent = EnemyCurrent.GetComponent<EnemyProperties>().ShellContainer;
-                            ShellCurrent.GetComponent<BulletShell>().Target = SlaveCurrent;
-
-                            if (ShellCurrent.GetComponent<BulletShell>().Gotcha == true) {
-                                EnemyProperties EnmPrs = EnemyCurrent.GetComponent<EnemyProperties>();
-
-                                if (EnmPrs.Skin == 1) {
-                                    ActivateShakes();
-                                }
-                                if (EnmPrs.Skin == 3) {
-                                    ActivateShakes();
-                                }
-                                if (EnmPrs.Skin == 4) {
-                                    ActivateShakes();
-                                }
-                                if (EnmPrs.Skin == 5) {
-                                    ActivateShakes();
-                                }
-
-                                Destroy(ShellCurrent);
-                                SlaveCurrent.GetComponent<SlaveProperties>().Health -= EnemyCurrent.GetComponent<EnemyProperties>().PowerOfShot;
-                                SlaveCurrent.GetComponent<SlaveProperties>().GotDamage();
-
-                                GameObject GetWeapon;
-                                if (SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef != null) {
-                                    GetWeapon = SlaveCurrent.GetComponent<SlaveProperties>().WeaponXRef;
-                                    int RandDamage = Random.Range(0, 2);
-                                    if (RandDamage == 0) {
-                                        if (GetWeapon.GetComponent<WeaponProperties>().Condition != 1) {
-                                            GetWeapon.GetComponent<WeaponProperties>().Condition -= 1;
+                    if (isActiveEnemy.ShellContainer != null) {
+                        if (SlaveCurrent != null) {
+                            isActiveEnemy.ShellContainer.gameObject.GetComponent<BulletShell>().Target = SlaveCurrent.gameObject;
+                            if (isActiveEnemy.ShellContainer.GetComponent<BulletShell>().Gotcha == true) {
+                                ActivateShakes();
+                                isActiveSlave.Health -= (int)isActiveEnemy.PowerOfShot;
+                                if (isActiveSlave.Health <= 0) {
+                                    isActiveSlave.GetComponent<Animator>().SetBool("Dead", true);
+                                    int plc = 0;
+                                    foreach (GameObject slv in PlayInv.SlavePlace) {
+                                        if (slv != null) {
+                                            if (slv == SlaveCurrent) {
+                                                PlayInv.SlavePlace[plc] = null;
+                                            }
                                         }
-                                    }
-                                }
-                                if (SlaveCurrent.GetComponent<SlaveProperties>().Health <= 0) {
-
-                                    SlaveCurrent.GetComponent<Animator>().SetBool("Dead", true);
-                                    int GetNum = SlaveCurrent.GetComponent<SlaveProperties>().Number;
-
-                                    foreach (SlavePackage Pack in this.GetComponent<PlayerInventory>().SlavesBag) {
-                                        if (Pack.NumberOfSlave == GetNum) {
-                                            this.GetComponent<PlayerInventory>().SlavesBag.Remove(Pack);
-                                            break;
-                                        }
+                                        plc++;
                                     }
                                     Slaves.Remove(SlaveCurrent);
-                                    PlayerInventory PlayInv = this.GetComponent<PlayerInventory>();
-                                    for (int a = 0; a < PlayInv.SlavePlace.Length; a++) {
-                                        if (PlayInv.SlavePlace[a] == SlaveCurrent) {
-                                            PlayInv.SlavePlace[a] = null;
-                                        }
-                                    }
-                                    for (int a = 0; a < PlayInv.SlavesBag.Count; a++) {
-                                        if (PlayInv.SlavesBag[a].NumberOfSlave == SlaveCurrent.GetComponent<SlaveProperties>().Number) {
-                                            PlayInv.SlavesBag.Remove(PlayInv.SlavesBag[a]);
-                                        }
-                                    }
-                                    SlaveCurrent.transform.SetParent(Trash.transform);
                                     SlaveCurrent.GetComponent<Collider2D>().enabled = false;
-                                    SlaveCurrent.GetComponent<SlaveProperties>().ShowHealthbar = false;
-
-                                    Destroy(SlaveCurrent.GetComponent<SlaveProperties>().InventoryPack.gameObject);
-
-                                    SlaveCurrent.GetComponent<SlaveProperties>().isActive = false;
-                                    SlaveCurrent = null;
-
-                                    if (Slaves.Count == 0) {
-                                        Milsec = 0.0f;
-                                        BattleIsOver = true;
-                                    }
+                                    SlaveCurrent.transform.SetParent(Trash.transform);
                                 } else {
-                                    SlaveCurrent.GetComponent<SlaveProperties>().isActive = false;
+                                    isActiveSlave.GotDamage();
                                 }
-                                EnemyCurrent.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-                                Timer.active = true;
-                                for (int Sec = 0; Sec < Timer.transform.childCount; Sec++) {
-                                    Timer.transform.GetChild(Sec).gameObject.active = true;
+
+                                GameObject Dmg = Instantiate(Resources.Load("DmgNum")) as GameObject;
+                                Dmg.transform.position = SlaveCurrent.transform.position + new Vector3(0, 0, -0.5f);
+                                Dmg.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "-" + Final_Power_of_Shot.ToString();
+
+                                GameObject Sheel = isActiveEnemy.ShellContainer.gameObject;
+                                Destroy(Sheel);
+                                //isActiveSlave.isActive = false;
+                                //isActiveEnemy.isActive = false;
+                                //isActiveSlave = null;
+                                //SlaveCurrent = null;
+                                //isActiveEnemy = null;
+                                //EnemyCurrent = null;
+
+                                if (Slaves.Count == 0) {
+                                    if (Slaves.Count == 0) {
+                                        Info_On_End_Battle(false);
+                                    }
+                                    if (Enemies.Count == 0) {
+                                        Info_On_End_Battle(true);
+                                    }
+                                    BattleIsOver = true;
+                                    Nullify_Timer();
+                                    TimeCounter = 0;
                                 }
-                                GetStart();
-                                TimeCounter = -1;
-                                YourPass = true;
+
+                                Wait_A_Second = false;
                             }
                         }
                     }
                 }
-            
-                //if (TimeCounter == 2) {
-                //    EnemyCurrent.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f, 1);
-                //}
 
-                //if (TimeCounter == 1) {
-                //    SlaveCurrent.GetComponent<SlaveProperties>().isActive = true;
-                //}
 
             }
 
-            if (BattleIsOver == true && Milsec < 0.5f) {
-                Milsec += 0.1f;
-                if (SlavesContainer.transform.childCount == 0) {
-                    ShowFailBattle();
-                }
-                if (EnemiesContainer.transform.childCount == 0) {
-                    ShowDescriptions();
-                }
-                Timer.active = false;
-                Rotor.GetComponent<Animator>().SetBool("Activated", true);
-                FinalPanel.GetComponent<Animator>().SetBool("Activated", true);
-                FinalPanel.GetComponent<AudioSource>().Play();
+            //======================== Если Пуля Раба достигла Врага ===========================
+            if (isActiveSlave != null) {
+                if (isActiveSlave.ShellContainer != null) {
+                    if (EnemyCurrent != null) {
+                        isActiveSlave.ShellContainer.gameObject.GetComponent<BulletShell>().Target = EnemyCurrent.gameObject;
+                        if (isActiveSlave.ShellContainer.GetComponent<BulletShell>().Gotcha == true) {
+                            ActivateShakes();
+                            GameObject Sheel = isActiveSlave.ShellContainer.gameObject;
+                            Destroy(Sheel);
+                            isActiveEnemy.Health -= (int)isActiveSlave.PowerOfShot;
+                            if (isActiveEnemy.Health <= 0) {
+                                isActiveSlave.Battles += isActiveEnemy.FullHealth;
+                                isActiveSlave.Slaves_Level_Grade();
+                                isActiveEnemy.GetComponent<Animator>().SetBool("Dead", true);
+                                Enemies.Remove(EnemyCurrent);
+                                EnemyCurrent.transform.SetParent(Trash.transform);
+                                EnemyCurrent.GetComponent<Collider2D>().enabled = false;
+                            } else {
+                                isActiveSlave.Battles += (int)isActiveSlave.PowerOfShot;
+                                isActiveSlave.Slaves_Level_Grade();
+                                isActiveEnemy.Damaged();
+                            }
 
-                UpdateInventoryCounts();
-            }
+                            GameObject Dmg = Instantiate(Resources.Load("DmgNum")) as GameObject;
+                            Dmg.transform.position = EnemyCurrent.transform.position + new Vector3(0, 0, -0.5f);
+                            Dmg.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "-" + Final_Power_of_Shot.ToString();
 
-            if (TakeLootButton.GetComponent<ButtonSample>().isPressed == true) {
+                            isActiveSlave.isActive = false;
+                            isActiveEnemy.isActive = false;
+                            isActiveSlave = null;
+                            SlaveCurrent = null;
+                            isActiveEnemy = null;
+                            EnemyCurrent = null;
 
-                foreach (GameObject Slave in this.GetComponent<PlayerInventory>().SlavePlace) {
-                    if (Slave != null) {
-                        SlaveProperties SlvProp = Slave.GetComponent<SlaveProperties>();
-                        SlvProp.Battles += 1;
-                        int GetLvl = SlvProp.Level;
-                        SlvProp.UpgradeLevel();
-                        if (GetLvl != SlvProp.Level) {
-                            SlvProp.FullHealth = (int)(SlvProp.FullHealth * 1.5f);
-                            SlvProp.Damage = (int)(SlvProp.Damage * 1.5f);
-                            SlvProp.Accuracy = (int)(SlvProp.Accuracy * 1.5f);
-                            SlvProp.Health = SlvProp.FullHealth;
+                            if (Enemies.Count == 0) {
+                                if (Slaves.Count == 0) {
+                                    Info_On_End_Battle(false);
+                                }
+                                if (Enemies.Count == 0) {
+                                    Info_On_End_Battle(true);
+                                }
+                                Nullify_Timer();
+                                BattleIsOver = true;
+                                TimeCounter = 0;
+                            }
+
                         }
                     }
                 }
+            }            
 
-                foreach (Transform Loot in LootContainer.transform.Find("LOOT")) {
-                    if (Loot.GetComponent<WeaponProperties>() != null) {
-                        if (this.GetComponent<PlayerInventory>().Weapons < 9) {
-                            for (int wp = 0; wp < this.GetComponent<PlayerInventory>().WeaponPlace.Length; wp++) {
-                                if (this.GetComponent<PlayerInventory>().WeaponPlace[wp] == null) {
-                                    this.GetComponent<PlayerInventory>().WeaponPlace[wp] = Loot.gameObject;
-                                    this.GetComponent<PlayerInventory>().Weapons += 1;
-                                    Loot.gameObject.active = false;
-                                    LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).gameObject.active = false;
+            //================== Нажать следующий ход =================
+            if (SkipPass.gameObject.active == true) {
+                if (SkipPass.isPressed == true) {
+                    EnemyPass();
+                    Nullify_Timer();
+                    Wait_A_Second = false;
+                    YourPass = false;
+                }
+            }
 
-                                    TakeWeapon.Play();
+            //=============== Битва окончена ================
 
-                                    break;
+            if (BattleIsOver == true) {
+                elapsed += 1;
+                if (elapsed >= 20f) {
+                    TimeCounter++;
+
+                    if (TimeCounter == 0) {
+                        PickMonitor.Play();
+                        InfoText.active = true;
+                    }
+                    if (TimeCounter == 1) {
+                        InfoText.active = false;
+                    }
+                    if (TimeCounter == 2) {
+                        PickMonitor.Play();
+                        InfoText.active = true;
+                    }
+                    if (TimeCounter == 3) {
+                        InfoText.active = false;
+                    }
+                    if (TimeCounter == 4) {
+                        PickMonitor.Play();
+                        InfoText.active = true;
+                    }
+                    if (TimeCounter == 5) {
+                        InfoText.active = false;
+                    }
+                    if (TimeCounter == 6) {
+                        PickMonitor.Play();
+                        InfoText.active = true;
+                        Timer.active = false;
+                        int rename = 0;
+                        foreach (Transform Stf in LOOT.transform) {
+                            Rename_Loot(Stf.gameObject, rename);
+                            rename++;
+                        }
+                        Rotor.GetComponent<Animator>().SetBool("Activated", true);
+                        FinalPanel.GetComponent<Animator>().SetBool("Activated", true);
+                        FinalPanel.GetComponent<AudioSource>().Play();
+                        TimeCounter++;
+                    }
+                    elapsed = 0;
+                }
+                //=============================== Забрать Лут ==================================
+
+                if (Input.GetMouseButtonDown(0)) {
+                    RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                    if (hit.collider.gameObject.layer == ItemLayer) {
+
+                        if (hit.collider.gameObject.GetComponent<WeaponProperties>() != null) {
+                            WeaponProperties wpn = hit.collider.gameObject.GetComponent<WeaponProperties>();
+                            if (wpn.isActive == false) {
+                                wpn.isActive = true;
+                            } else {
+                                wpn.isActive = false;
+                            }
+                            PickMonitor.Play();
+                        }
+                        if (hit.collider.gameObject.GetComponent<OtherStuff>() != null) {
+                            OtherStuff stf = hit.collider.gameObject.GetComponent<OtherStuff>();
+                            if (stf.isActive == false) {
+                                stf.isActive = true;
+                            } else {
+                                stf.isActive = false;
+                            }
+                            PickMonitor.Play();
+                        }
+                    }
+                }
+                if (TakeLootButton.GetComponent<ButtonSample>().isPressed == true) {
+                    foreach (GameObject loot in Loots) {
+                        if (loot != null) {
+                            if (loot.GetComponent<OtherStuff>() != null) {
+                                OtherStuff prop = loot.GetComponent<OtherStuff>();
+                                if (prop.isActive == true) {
+                                    if (prop.Skin != 4) {
+                                        int plcnum = 0;
+                                        foreach (GameObject plc in PlayInv.Package) {
+                                            if (plc == null) {
+                                                PlayInv.Package[plcnum] = loot;
+                                                if (prop.Skin == 1) {
+                                                    TakeMedicine.Play();
+                                                }
+                                                if (prop.Skin == 2) {
+                                                    TakeWater.Play();
+                                                }
+                                                if (prop.Skin == 3) {
+                                                    TakeBuff.Play();
+                                                }
+                                                Names[int.Parse(loot.name)].gameObject.active = false;
+                                                loot.transform.SetParent(Loader.ItemsSource.transform);
+                                                loot.transform.localPosition = new Vector3(0, 0, 0);
+                                                prop.isActive = false;
+                                                OverLoad.active = false;
+                                                break;
+                                            } else {
+                                                OverLoad.active = true;
+                                            }
+                                            plcnum++;
+                                        }
+                                    } else {
+                                        Names[int.Parse(loot.name)].gameObject.active = false;
+                                        PlayInv.Money += prop.Price;
+                                        TakeMoney.Play();
+                                        Destroy(loot);
+                                    }
+                                }
+                            } else if(loot.GetComponent<WeaponProperties>() != null){
+                                WeaponProperties prop = loot.GetComponent<WeaponProperties>();
+                                if (prop.isActive == true) {
+                                    int plcnum = 0;
+                                    foreach (GameObject plc in PlayInv.Package) {
+                                        if (plc == null) {
+                                            PlayInv.Package[plcnum] = loot;
+                                            TakeWeapon.Play();
+                                            Names[int.Parse(loot.name)].gameObject.active = false;
+                                            loot.transform.SetParent(Loader.ItemsSource.transform);
+                                            loot.transform.localPosition = new Vector3(0, 0, 0);
+                                            prop.isActive = false;
+                                            OverLoad.active = false;
+                                            break;
+                                        } else {
+                                            OverLoad.active = true;
+                                        }
+                                        plcnum++;
+                                    }
                                 }
                             }
-                        } else {
-                            Loot.gameObject.active = true;
-                            LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).gameObject.active = true;
-                            GameObject SendMessage = LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).transform.GetChild(0).gameObject;
-                            SendMessage.GetComponent<TextMesh>().text = "Your bag is \noverload!!!";
-                        }
-                    }
-                    if (Loot.GetComponent<OtherStuff>() != null) {
-                        if (this.GetComponent<PlayerInventory>().Stuff < 9) {
-                            for (int sp = 0; sp < this.GetComponent<PlayerInventory>().StuffPlace.Length; sp++) {
-                                
-                                if (Loot.GetComponent<OtherStuff>().Skin != 4 && this.GetComponent<PlayerInventory>().StuffPlace[sp] == null) {
-                                    this.GetComponent<PlayerInventory>().StuffPlace[sp] = Loot.gameObject;
-                                    this.GetComponent<PlayerInventory>().Stuff += 1;
-                                    Loot.gameObject.active = false;
-                                    LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).gameObject.active = false;
-                                    if (Loot.GetComponent<OtherStuff>().Skin == 1) {
-                                        TakeMedicine.Play();
-                                    }
-                                    if (Loot.GetComponent<OtherStuff>().Skin == 2) {
-                                        TakeWater.Play();
-                                    }
-                                    if (Loot.GetComponent<OtherStuff>().Skin == 3) {
-                                        TakeBuff.Play();
-                                    }
-                                    break;
-                                }
-                            }
-                        } else {
-                            Loot.gameObject.active = true;
-                            LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).gameObject.active = true;
-                            GameObject SendMessage = LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).transform.GetChild(0).gameObject;
-                            SendMessage.GetComponent<TextMesh>().text = "Your bag is \noverloaded!!!";
-                        }
-                        if (Loot.GetComponent<OtherStuff>().Skin == 4) {
-                            this.GetComponent<PlayerInventory>().Money += Loot.GetComponent<OtherStuff>().Price;
-                            Loot.gameObject.active = false;
-                            TakeMoney.Play();
-                            LootContainer.transform.GetChild(Loot.transform.GetSiblingIndex()).gameObject.active = false;
                         }
                     }
                 }
 
-                bool GotAll = true;
-                foreach (Transform Loot in LootContainer.transform.Find("LOOT")) {
-                    if (Loot.gameObject.active == true) {
-                        GotAll = false;
+                if (BackToMap.GetComponent<ButtonSample>().isPressed == true) {
+                    Loader.SaveAll();
+                    //Debug.Log("Already");
+                    Loader.Save_Enemy_Data(Enm_Data.NumberOfArea, Enm_Data.Count);
+                    TakeLootButton.active = false;
+                    BackToMap.active = false;
+                    OverLoad.active = false;
+                    LOOT.active = false;
+                    foreach (TextMesh name in Names) {
+                        name.gameObject.active = false;
                     }
+                    TuningTable.GetComponent<Animator>().SetBool("Activation", true);
+                    BackToMap.GetComponent<ButtonSample>().isPressed = false;
                 }
-
-                if (GotAll == true) {
-                    TuningTable.GetComponent<SpriteRenderer>().enabled = true;
-                }
-                TakeLootButton.GetComponent<ButtonSample>().isActive = false;
-                TakeLootButton.transform.GetChild(0).gameObject.active = false;
-                BackToMap.active = true;
             }
 
-            if (BackToMap.GetComponent<ButtonSample>().isPressed == true) {
-                SaveLoadData newSaveLoad = new SaveLoadData();
-                newSaveLoad.PlayInv = this.GetComponent<PlayerInventory>();
-                newSaveLoad.SaveAll();
 
-                int GetBodies = this.GetComponent<DataLoaderInBattle>().Count;
-                int GetClanArea = this.GetComponent<DataLoaderInBattle>().NumberOfArea;
-
-                string json = File.ReadAllText(Application.persistentDataPath + "/MapData.json");
-                MapData GetMap = JsonUtility.FromJson<MapData>(json);
-                foreach (BanditArea Band in GetMap.GenerateIndexes.Bandits) {
-                    if (Band.NumberOfArea == GetClanArea) {
-                        Band.Population -= GetBodies;
-                        if (Band.Population <= 0) {
-                            GetMap.GenerateIndexes.Bandits.Remove(Band);
-                        }
-                        break;
-                    }
-                }
-
-                string newMap = JsonUtility.ToJson(GetMap);
-                StreamWriter WriteNewMap = new StreamWriter(Application.persistentDataPath + "/MapData.json");
-                WriteNewMap.Write(newMap);
-                WriteNewMap.Close();
-            
-                SceneManager.LoadScene(2);
-            }
+            //================================= Если нажать Game Over ===================================
 
             if (GameOverButton.GetComponent<ButtonSample>().isPressed == true) {
                 if (File.Exists(Application.persistentDataPath + "/PlayerData.json")) {
@@ -627,6 +808,12 @@ public class WORK_Battle : MonoBehaviour
                 }
                 if (File.Exists(Application.persistentDataPath + "/MapData.json")) {
                     File.Delete(Application.persistentDataPath + "/MapData.json");
+                }
+                if (File.Exists(Application.persistentDataPath + "/BanditTroop.json")) {
+                    File.Delete(Application.persistentDataPath + "/BanditTroop.json");
+                }
+                if (File.Exists(Application.persistentDataPath + "/StoresStack.json")) {
+                    File.Delete(Application.persistentDataPath + "/StoresStack.json");
                 }
                 SceneManager.LoadScene(0);
             }

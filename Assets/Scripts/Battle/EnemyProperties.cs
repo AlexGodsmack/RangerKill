@@ -17,10 +17,12 @@ public class EnemyProperties : MonoBehaviour {
 
     public GameObject HealthBarContainer;
     public GameObject HealthBar;
-    public GameObject LevelIndicator;
     public GameObject ShellContainer;
+    public GameObject Lighter;
     public AudioSource[] WeaponSound;
     public AudioSource Death;
+
+    public bool isActive;
 
     void Start() {
 
@@ -28,7 +30,7 @@ public class EnemyProperties : MonoBehaviour {
         Damage = Damage * Level;
         Accuracy = Accuracy * Level;
         PowerOfShot = Damage + Accuracy;
-        LevelIndicator.GetComponent<TextMesh>().text = Level.ToString();
+        //LevelIndicator.GetComponent<TextMesh>().text = Level.ToString();
         this.GetComponent<Animator>().SetInteger("Clan", 1);
         this.GetComponent<Animator>().SetInteger("Skin", Skin);
         this.GetComponent<Animator>().SetInteger("Weapon", WeaponInHand);
@@ -45,6 +47,13 @@ public class EnemyProperties : MonoBehaviour {
         if (Health >= 0) {
             HealthBar.transform.localScale = new Vector3((float)Health / (float)FullHealth, 1, 1);
             HealthBarContainer.active = true;
+            if (isActive == true) {
+                Lighter.GetComponent<Animator>().SetBool("Activation", true);
+                this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+            } else {
+                Lighter.GetComponent<Animator>().SetBool("Activation", false);
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+            }
         } else {
             HealthBar.transform.localScale = new Vector3(0, 1, 1);
             HealthBarContainer.active = false;

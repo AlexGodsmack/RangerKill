@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class BulletsProperties : MonoBehaviour
 {
-
+    [Header("Features")]
     public int Skin;
     public string Name;
     public int Count;
     public int Price;
-
+    [Header("Skins")]
     public Sprite[] NumSkin;
     public Sprite[] NumBoughtSkin;
-
+    [Header("Conditions")]
     public bool Bought;
     public bool isActive;
-
+    [Header("Materials")]
     public Material Default;
     public Material Additive;
-
+    [Header("Info source")]
     public TextAsset Data;
+    [Header("Objects")]
+    public GameObject Lighter;
 
     void Start()
     {
@@ -49,17 +51,13 @@ public class BulletsProperties : MonoBehaviour
 
         if (isActive == false) {
             if (Bought == false) {
-                if (this.transform.GetChild(0).gameObject != null) {
-                    this.transform.GetChild(0).gameObject.active = false;
-                }
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             } else {
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             }
         } else {
             if (Bought == false) {
-                if (this.transform.GetChild(0).gameObject != null) {
-                    this.transform.GetChild(0).gameObject.active = true;
-                }
+                this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             } else {
                 this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             }

@@ -12,11 +12,21 @@ public class WeaponLighter : MonoBehaviour
     public TextMesh Name;
     public TextMesh Bullets;
 
+    public AudioSource Open;
+    public AudioSource Close;
+
     public bool Activate;
 
     void Start()
     {
         
+    }
+
+    public void OpenSound() {
+        Open.Play();
+    }
+    public void CloseSound() {
+        Close.Play();
     }
 
     void Update()

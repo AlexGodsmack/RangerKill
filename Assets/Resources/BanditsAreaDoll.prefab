@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7147615738584721552}
   - component: {fileID: 797467978262360973}
   - component: {fileID: 9134711868696277459}
+  - component: {fileID: 5095085553569790882}
   - component: {fileID: -2650958171282035946}
   - component: {fileID: 1608515355}
   m_Layer: 15
@@ -75,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4679825671483334100, guid: fd70d6c16be65334193b4683d248e1fb,
+  m_Sprite: {fileID: -2420798114356252508, guid: 6c8f582b346e3cb47a42ca96f07f93a5,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -97,14 +98,14 @@ PolygonCollider2D:
   m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.64, y: 0.64}
+    pivot: {x: 0.5, y: 0.35}
+    oldSize: {x: 1.25, y: 1.71}
     newSize: {x: 1.92, y: 1.92}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -130,14 +131,14 @@ PolygonCollider2D:
   m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.64, y: 0.64}
+    pivot: {x: 0.5, y: 0.35}
+    oldSize: {x: 1.25, y: 1.71}
     newSize: {x: 1.92, y: 1.92}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -167,14 +168,14 @@ PolygonCollider2D:
   m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.64, y: 0.64}
+    pivot: {x: 0.5, y: 0.35}
+    oldSize: {x: 1.25, y: 1.71}
     newSize: {x: 1.92, y: 1.92}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -194,6 +195,22 @@ PolygonCollider2D:
       - {x: 1.4596413, y: 0.38005066}
       - {x: 1.0890139, y: 1.0730479}
       - {x: 0.3635394, y: 1.4436494}
+--- !u!58 &5095085553569790882
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811235581089292862}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.6
 --- !u!50 &-2650958171282035946
 Rigidbody2D:
   serializedVersion: 4
@@ -231,19 +248,23 @@ MonoBehaviour:
   Coverage: 0
   Population: 0
   Number: 0
+  Attacks: 0
   Colliders:
   - {fileID: 7147615738584721552}
   - {fileID: 797467978262360973}
   - {fileID: 9134711868696277459}
+  - {fileID: 5095085553569790882}
   Truman:
-  - {fileID: -4679825671483334100, guid: fd70d6c16be65334193b4683d248e1fb, type: 3}
-  - {fileID: 2230707761297363051, guid: 878e05dfecb4f5b41a2169bc686cb39c, type: 3}
-  - {fileID: 8505719730736174453, guid: f3d8a788dba3a5c43ae424cc5831ed21, type: 3}
+  - {fileID: 9096409640609763246, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  - {fileID: -6473314575866324070, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  - {fileID: 7671956648699486145, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
   Knackers:
-  - {fileID: -7235234788573307083, guid: fd70d6c16be65334193b4683d248e1fb, type: 3}
-  - {fileID: 1352651531528660162, guid: 878e05dfecb4f5b41a2169bc686cb39c, type: 3}
-  - {fileID: 2307664836302026719, guid: f3d8a788dba3a5c43ae424cc5831ed21, type: 3}
+  - {fileID: 9096409640609763246, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  - {fileID: -6473314575866324070, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  - {fileID: 7671956648699486145, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
   Horde:
-  - {fileID: 5330289590730784201, guid: fd70d6c16be65334193b4683d248e1fb, type: 3}
-  - {fileID: 482292827437980689, guid: 878e05dfecb4f5b41a2169bc686cb39c, type: 3}
-  - {fileID: -4090035797518343186, guid: f3d8a788dba3a5c43ae424cc5831ed21, type: 3}
+  - {fileID: 9096409640609763246, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  - {fileID: -6473314575866324070, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  - {fileID: 7671956648699486145, guid: 6c8f582b346e3cb47a42ca96f07f93a5, type: 3}
+  WaterTower: {fileID: -2420798114356252508, guid: 6c8f582b346e3cb47a42ca96f07f93a5,
+    type: 3}

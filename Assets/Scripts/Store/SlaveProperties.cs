@@ -19,7 +19,6 @@ public class SlaveProperties : MonoBehaviour {
     public float PowerOfShot;
     public float Distance;
     public int Efficiency;
-    //public string[] Package;
     [Space]
     public bool isActive;
     [Space]
@@ -29,11 +28,23 @@ public class SlaveProperties : MonoBehaviour {
     [Space]
     public bool ShowHealthbar;
     [Space]
+    public bool ShowExpbar;
+    [Space]
     public bool FullPackage;
     [Space]
     public bool IN_RUSH;
     [Space]
+    public bool Dead;
+    [Space]
     public int WeaponSkin;
+
+    [Header("Start Properties")]
+    public int Start_Fhp;
+    public int Start_Dmg;
+    public int Start_Acc;
+    public int Heal_Units;
+    public int Shot_Units;
+    public int Rush_Units;
 
     [Header("Objects")]
     public GameObject WeaponXRef;
@@ -44,15 +55,19 @@ public class SlaveProperties : MonoBehaviour {
     public GameObject Goal;
     public GameObject Healthbar;
     public GameObject HealthLineProgress;
-    //public GameObject LevelIndicator;
+    public GameObject Expbar;
+    public GameObject ExpbarLine;
     public GameObject Fire;
     public GameObject ShellContainer;
     [Header("Sounds")]
     public AudioSource[] WeaponSounds;
     public AudioSource Death;
+    public AudioSource LevelUp;
     [Header("Materials")]
     public Material Additive;
     public Material Default;
+    [Header("Levels")]
+    public int[] Grade;
 
     //public Sprite[] SkinImage;
 
@@ -88,8 +103,8 @@ public class SlaveProperties : MonoBehaviour {
                     PowerOfShot = Mathf.RoundToInt(3 * ((Efficiency * Damage * Accuracy) / (Distance * 100)));
                 }
             }
-        } else {
-            Efficiency = 0;
+        } else if (WeaponXRef == null) {
+            PowerOfShot = 0;
             WeaponSkin = 0;
         }
 
@@ -97,18 +112,28 @@ public class SlaveProperties : MonoBehaviour {
             this.GetComponent<Animator>().SetBool("ThisPersonBought", false);
             this.GetComponent<SpriteRenderer>().material = Default;
             this.GetComponent<Animator>().SetInteger("WithWeapon", WeaponSkin);
+            if (Dead == false) {
+                ShowHealthbar = true;
+            } else {
+                ShowHealthbar = false;
+                ShowExpbar = false;
+            }
             if (isActive == true) {
                 Lighter.GetComponent<SlaveLighter>().Activate = true;
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                ShowExpbar = true;
             } else {
                 Lighter.GetComponent<SlaveLighter>().Activate = false;
                 this.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                ShowExpbar = false;
             }
         } else {
             this.GetComponent<Animator>().SetBool("ThisPersonBought", true);
             this.GetComponent<SpriteRenderer>().material = Additive;
             this.GetComponent<Animator>().SetInteger("WithWeapon", 0);
             Lighter.GetComponent<SlaveLighter>().Activate = false;
+            ShowHealthbar = false;
+            ShowExpbar = false;
             if (isActive == true) {
                 this.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             } else {
@@ -127,7 +152,14 @@ public class SlaveProperties : MonoBehaviour {
             Healthbar.active = false;
         }
 
-        //LevelIndicator.GetComponent<TextMesh>().text = Level.ToString();
+        if (ShowExpbar == true) {
+            Expbar.active = true;
+            float coef = (float)(Battles - Grade[Level - 1]) / Grade[Level];
+            ExpbarLine.transform.localScale = new Vector3(coef, 1, 1);
+        } else {
+            Expbar.active = false;
+        }
+
         if (WeaponSkin != 0) {
             Fire.GetComponent<Fire>().Skin = WeaponSkin;
         }
@@ -141,24 +173,6 @@ public class SlaveProperties : MonoBehaviour {
         //if (Input.GetMouseButtonDown(1)) {
         //    this.GetComponent<Animator>().SetBool("Fire", true);
         //}
-    }
-
-    public void UpgradeLevel() {
-        if (Battles < 3) {
-            Level = 1;
-        }
-        if (Battles >= 3 && Battles < 9) {
-            Level = 2;
-        }
-        if (Battles >= 9 && Battles < 16) {
-            Level = 3;
-        }
-        if (Battles >= 16 && Battles < 25) {
-            Level = 4;
-        }
-        if (Battles >= 25) {
-            Level = 5;
-        }
     }
 
     public void BackIdleState() {
@@ -185,6 +199,28 @@ public class SlaveProperties : MonoBehaviour {
     }
 
     public void OnDeath() {
+        Dead = true;
         Death.Play();
     }
+
+    public void Slaves_Level_Grade() {
+        int lvl = 1;
+        for (int a = 0; a < Grade.Length; a++) {
+            if (Battles >= Grade[a] && Battles < Grade[a + 1]) {
+                if (lvl > Level) {
+                    int Prevlvl = Level;
+                    Level = lvl;
+                    FullHealth = FullHealth + Start_Fhp;
+                    Health = FullHealth;
+                    Damage = Damage + Start_Dmg;
+                    Accuracy = Accuracy + Start_Acc;
+
+                    LevelUp.Play();
+                    Debug.Log("LevelUp");
+                }
+            }
+            lvl++;
+        }
+    }
+
 }

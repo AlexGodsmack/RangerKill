@@ -60,7 +60,6 @@ public class ShakeCamera : MonoBehaviour
                 }
                 //ShakingObject.transform.position = StartPos;
                 //ShakingObject.transform.position = StartPos;
-                Debug.Log(CurrentAmplitude);
             } else {
                 ShakingObject.transform.position = StartPos;
                 ShakingRun = false;
